@@ -3,12 +3,13 @@ $('#btn').click(function() {
     $('.overlay').fadeOut(200, function() {
       $(this).remove();
     });
+
     $('#content').css({
-      'margin-top': '-8rem'
+      'top': '0'
     });
   } else {
     $('#content').css({
-      'margin-top': '0'
+      'top': '8rem'
     });
 
     $('#content').append('<div class="overlay"></div>');

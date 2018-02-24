@@ -3,7 +3,7 @@
 
 html, body {
   height: 100%;
-  background-color: SkyBlue;
+  background-color: #252222;
   padding: 0;
   margin: 0; }
 
@@ -33,10 +33,17 @@ header {
     padding: 1rem;
     top: 4rem; }
 
-#content {
+.container {
   position: relative;
-  transition: all .3s ease-in-out;
+  width: 100%;
+  height: 100%;
   margin-top: -8rem;
+  overflow: hidden; }
+
+#content {
+  position: absolute;
+  top: 0;
+  transition: all .3s ease-in-out;
   height: 100%;
   width: 100%;
   background-color: red;
