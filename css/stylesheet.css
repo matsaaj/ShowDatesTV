@@ -1,0 +1,48 @@
+* {
+  box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  background-color: SkyBlue;
+  padding: 0;
+  margin: 0; }
+
+header nav {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  height: 4rem;
+  z-index: 1; }
+  header nav h3 {
+    margin: 0;
+    display: inline-block; }
+  header nav button {
+    display: inline-block; }
+header .search {
+  background-color: #243B40;
+  height: 0;
+  opacity: 0;
+  transition: all .4s ease-in-out; }
+  header .search .search_container {
+    opacity: 0;
+    background-color: #243B40;
+    color: #fff;
+    position: absolute;
+    width: 100%;
+    padding-top: 4rem;
+    z-index: 0;
+    top: -4rem;
+    transition: all .4s ease-in-out; }
+    header .search .search_container input {
+      margin: 1rem; }
+
+#content {
+  height: 100%;
+  width: 100%;
+  background-color: red;
+  background-image: url("https://image.tmdb.org/t/p/w1920/3GZul5YwnDpuP4N1DWNbP7VnxZT.jpg"); }
+
+/*# sourceMappingURL=stylesheet.css.map */
