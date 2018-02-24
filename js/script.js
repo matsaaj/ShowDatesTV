@@ -1,21 +1,17 @@
 $('#btn').click(function() {
-  if ($('.search_container').position().top != 0) {
-    $('.search_container').css({
-      'top': 0,
-      'opacity': 1
+  if ($('.overlay')[0]) {
+    $('.overlay').fadeOut(200, function() {
+      $(this).remove();
     });
-    $('.search').css({
-      'height': '8rem',
-      'opacity': 1
+    $('#content').css({
+      'margin-top': '-8rem'
     });
   } else {
-    $('.search_container').css({
-      'top': '-4rem',
-      'opacity': 0
+    $('#content').css({
+      'margin-top': '0'
     });
-    $('.search').css({
-      'height': '0',
-      'opacity': 0
-    });
+
+    $('#content').append('<div class="overlay"></div>');
+    $('.overlay').fadeIn(200);
   }
 });
