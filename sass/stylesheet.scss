@@ -1,78 +1,205 @@
+@import url('https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,600,700,800,900');
+
+$red: #e85354;
+$yellow: #ffefb9;
+$gray: #595656;
+$darkgray: #252222;
+$white: #fff;
 
 * {
   box-sizing: border-box;
 }
 
+body {
+  position: relative;
+  font-family: 'Nunito Sans', sans-serif;
+}
+
 html, body {
   height: 100%;
-  background-color: rgb(37, 34, 34);
+  background-color: $darkgray;
   padding: 0;
   margin: 0;
 }
 
+
+// HEADER //
+
 header {
-  color: #fff;
-  height: 8rem;
-  background-color: rgb(232, 83, 84);
+  position: relative;
+}
 
-  nav {
-    background-color: transparent;
-    position: absolute;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    height: 4rem;
-    z-index: 1;
-    top: 0;
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  // padding: 1rem;
+  background-color: $red;
 
-    h3 {
-      margin: 0;
-      display: inline-block;
-    }
+  #brand, #search_toggle {
+    display: inline-block;
+    margin: .5rem 1rem;
+  }
 
-    button {
-      display: inline-block;
+  #brand {
+    padding: .5rem;
+    color: $white;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 1rem;
+    font-weight: 700;
+    transition: all .15s ease;
+  }
+
+  #search_toggle { // FIX ALIGNMENT
+    position: relative;
+    cursor: pointer;
+    height: 32px;
+    width: 32px;
+    line-height: 0;
+
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */
+
+    svg {
+      position: absolute;
+      margin: auto;
+      top: 0; left: 0; bottom: 0; right: 0;
+      transition: all .15s ease;
     }
   }
 
-  .search {
-    position: absolute;
-    width: 100%;
-    padding: 1rem;
-    top: 4rem;
-
-
-    input {
+  #search_toggle:hover {
+    svg {
+      padding: .175rem;
     }
   }
 }
 
-.container {
+#search {
+  // margin-top: 1rem;
   position: relative;
   width: 100%;
+  background-color: $red;
+
+  input {
+    font-family: 'Nunito Sans', sans-serif;
+  }
+
+  .searchbar_input {
+    width: 100%;
+    padding: 1.5rem;
+    background: rgba(0,0,0,.125);
+    // border-radius: .25rem;
+    outline: 0;
+    border: 0;
+    color: $yellow;
+    font-weight: 300;
+    font-size: 2em;
+  }
+
+  @mixin placeholder($color, $opacity) {
+    &::-webkit-input-placeholder {
+      color: $color;
+      opacity: $opacity;
+    }
+    &:-moz-placeholder {
+      color: $color;
+      opacity: $opacity;
+    }
+    &::-moz-placeholder {
+      color: $color;
+      opacity: $opacity;
+    }
+    &:-ms-input-placeholder {
+      color: $color;
+      opacity: $opacity;
+    }
+  }
+
+  [placeholder] {
+    @include placeholder($yellow, .8);
+  }
+}
+
+.autocomplete_suggestions {
+  //TEMP display: none;
+  position: absolute;
+  width: 100%;
   height: 100%;
-  margin-top: -8rem;
+  color: $white;
+  background-color: $darkgray;
+  z-index: 2;
+
+  ul, li {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  ul {
+    margin: .5rem;
+  }
+
+  li {
+    padding: 2rem 2rem;
+    background-color: rgba(0,0,0,.15);
+    border-radius: .25rem;
+    margin: .5rem 0;
+  }
+}
+
+
+// CONTENT //
+
+.content_container {
+  position: relative;
+  min-height: 100%;
+  height: 100%;
   overflow: hidden;
 }
 
 #content {
-  position: absolute;
-  top: 0;
-  transition: all .3s ease-in-out;
+  position: relative;
   height: 100%;
-  width: 100%;
-  background-color: red;
-  background-image: url('https://image.tmdb.org/t/p/w1920/3GZul5YwnDpuP4N1DWNbP7VnxZT.jpg');
 }
 
-.overlay {
-  display: none;
+
+
+// FOOTER //
+
+footer {
   position: absolute;
-  content: '';
-  top: 0;
-  height: 100%;
   width: 100%;
-  background-color: rgba(0,0,0,.8);
+  bottom: 0;
+  padding: 1.5rem;
+  z-index: 3;
+
+  .container {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid $red;
+  }
+
+  p {
+    color: $white;
+    font-weight: 300;
+    font-size: .875rem;
+    margin: .25rem 0;
+  }
+
+  .left_section, .right_section {
+    margin: 1rem 1rem 0 1rem;
+  }
+
+  .contact_email {
+    text-decoration: underline;
+  }
+
+  .copyright {
+    opacity: .5;
+  }
 }

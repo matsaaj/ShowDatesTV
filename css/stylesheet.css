@@ -1,5 +1,10 @@
+@import url("https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,600,700,800,900");
 * {
   box-sizing: border-box; }
+
+body {
+  position: relative;
+  font-family: 'Nunito Sans', sans-serif; }
 
 html, body {
   height: 100%;
@@ -8,54 +13,127 @@ html, body {
   margin: 0; }
 
 header {
-  color: #fff;
-  height: 8rem;
-  background-color: #e85354; }
-  header nav {
-    background-color: transparent;
-    position: absolute;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    height: 4rem;
-    z-index: 1;
-    top: 0; }
-    header nav h3 {
-      margin: 0;
-      display: inline-block; }
-    header nav button {
-      display: inline-block; }
-  header .search {
-    position: absolute;
-    width: 100%;
-    padding: 1rem;
-    top: 4rem; }
+  position: relative; }
 
-.container {
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #e85354; }
+  nav #brand, nav #search_toggle {
+    display: inline-block;
+    margin: .5rem 1rem; }
+  nav #brand {
+    padding: .5rem;
+    color: #fff;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 1rem;
+    font-weight: 700;
+    transition: all .15s ease; }
+  nav #search_toggle {
+    position: relative;
+    cursor: pointer;
+    height: 32px;
+    width: 32px;
+    line-height: 0;
+    -webkit-user-select: none;
+    /* Chrome all / Safari all */
+    -moz-user-select: none;
+    /* Firefox all */
+    -ms-user-select: none;
+    /* IE 10+ */
+    user-select: none;
+    /* Likely future */ }
+    nav #search_toggle svg {
+      position: absolute;
+      margin: auto;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      transition: all .15s ease; }
+  nav #search_toggle:hover svg {
+    padding: .175rem; }
+
+#search {
   position: relative;
   width: 100%;
+  background-color: #e85354; }
+  #search input {
+    font-family: 'Nunito Sans', sans-serif; }
+  #search .searchbar_input {
+    width: 100%;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.125);
+    outline: 0;
+    border: 0;
+    color: #ffefb9;
+    font-weight: 300;
+    font-size: 2em; }
+  #search [placeholder]::-webkit-input-placeholder {
+    color: #ffefb9;
+    opacity: 0.8; }
+  #search [placeholder]:-moz-placeholder {
+    color: #ffefb9;
+    opacity: 0.8; }
+  #search [placeholder]::-moz-placeholder {
+    color: #ffefb9;
+    opacity: 0.8; }
+  #search [placeholder]:-ms-input-placeholder {
+    color: #ffefb9;
+    opacity: 0.8; }
+
+.autocomplete_suggestions {
+  position: absolute;
+  width: 100%;
   height: 100%;
-  margin-top: -8rem;
+  color: #fff;
+  background-color: #252222;
+  z-index: 2; }
+  .autocomplete_suggestions ul, .autocomplete_suggestions li {
+    list-style-type: none;
+    padding: 0; }
+  .autocomplete_suggestions ul {
+    margin: .5rem; }
+  .autocomplete_suggestions li {
+    padding: 2rem 2rem;
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: .25rem;
+    margin: .5rem 0; }
+
+.content_container {
+  position: relative;
+  min-height: 100%;
+  height: 100%;
   overflow: hidden; }
 
 #content {
-  position: absolute;
-  top: 0;
-  transition: all .3s ease-in-out;
-  height: 100%;
-  width: 100%;
-  background-color: red;
-  background-image: url("https://image.tmdb.org/t/p/w1920/3GZul5YwnDpuP4N1DWNbP7VnxZT.jpg"); }
+  position: relative;
+  height: 100%; }
 
-.overlay {
-  display: none;
+footer {
   position: absolute;
-  content: '';
-  top: 0;
-  height: 100%;
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.8); }
+  bottom: 0;
+  padding: 1.5rem;
+  z-index: 3; }
+  footer .container {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid #e85354; }
+  footer p {
+    color: #fff;
+    font-weight: 300;
+    font-size: .875rem;
+    margin: .25rem 0; }
+  footer .left_section, footer .right_section {
+    margin: 1rem 1rem 0 1rem; }
+  footer .contact_email {
+    text-decoration: underline; }
+  footer .copyright {
+    opacity: .5; }
 
 /*# sourceMappingURL=stylesheet.css.map */
