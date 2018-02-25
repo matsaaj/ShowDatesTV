@@ -6,25 +6,37 @@ function autocompleteSearch(searchQuery) {
   $.ajax({
     async: true,
     crossDomain: true,
-    url: "https://api.themoviedb.org/3/search/tv?&api_key=" + api_key + "&query=" + searchQuery,
-    dataType: "jsonp",
-    method: "GET",
+    url: 'https://api.themoviedb.org/3/search/tv?&api_key=' + api_key + '&query=' + searchQuery,
+    dataType: 'jsonp',
+    method: 'GET',
     success: function(data) {
       dataArray = [];
       $('.autocomplete_suggestions ul li').remove();
+      $('.autocomplete_suggestions .highlight_card img').remove();
 
       if ($('.searchbar_input').val().length > 1) {
-        for (i = 0; i < data["results"].length && i < 5; i++) {
-          var title = data["results"][i]["name"];
-          var tmdbId = data["results"][i]["id"];
+        for (i = 0; i < data['results'].length && i < 5; i++) {
+          var title = data['results'][i]['name'];
+          var tmdbId = data['results'][i]['id'];
+          var backdrop = data['results'][i]['backdrop_path'];
+          var poster = data['results'][i]['poster_path'];
+          // TODO: ADD YEAR TO TITLE, f.ex. Game Of Thrones (2014)
 
           $('.autocomplete_suggestions ul').append('<li>' + title + '</li>');
           $('.autocomplete_suggestions ul li').eq(i).data('id', tmdbId);
+          $('.autocomplete_suggestions .highlight_card').append('<img src="https://image.tmdb.org/t/p/w92' + poster +'">');
+          $('.autocomplete_suggestions .highlight_card img').eq(i).data('imgSrc', poster);
+          // TODO: Large image loading
+
+          if (i == 0) {
+            $('.autocomplete_suggestions ul li').eq(i).addClass('highlight');
+            $('.autocomplete_suggestions .highlight_card img').addClass('visible');
+          }
 
           dataArray.push({label: title, value: title, id: tmdbId});
         }
       }
-
+      console.log(data);
       // console.log(dataArray);
       // TODO REMOVE DATA ARRAY
     }
@@ -40,6 +52,33 @@ $('.searchbar_input').on('input paste', function() {
   } else {
     $('.autocomplete_suggestions ul li').remove();
   }
+});
+
+// Update search higlight card on hover
+$('.autocomplete_suggestions ul').on('mouseenter', 'li', function() {
+  if (!$(this).hasClass('highlight')) {
+    $('.autocomplete_suggestions ul li').removeClass('highlight');
+    $(this).addClass('highlight');
+
+    $('.highlight_card img').removeClass('visible');
+    $('.highlight_card img').eq($(this).index()).addClass('visible');
+  }
+});
+
+// Load show page function
+function gotoShow(id, title) {
+  $('#content').empty();
+  searchbarToggle('hide');
+  var url = document.location.href + '?id=' + id;
+  window.history.replaceState(id, title, url)
+}
+
+// Go to show page on enter press and autocomplete item click
+$('.autocomplete_suggestions ul').on('click', 'li', function() {
+  var tmdbId = $(this).data('id');
+  var showTitle = $(this).text();
+
+  gotoShow(tmdbId, showTitle);
 });
 
 

@@ -128,6 +128,9 @@ nav {
 .autocomplete_suggestions {
   //TEMP display: none;
   position: absolute;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   width: 100%;
   height: 100%;
   color: $white;
@@ -141,13 +144,41 @@ nav {
 
   ul {
     margin: .5rem;
+    flex: 2;
   }
 
   li {
-    padding: 2rem 2rem;
-    background-color: rgba(0,0,0,.15);
+    padding: 1rem 1rem;
+    // background-color: rgba(0,0,0,.1);
     border-radius: .25rem;
     margin: .5rem 0;
+    cursor: pointer;
+
+    &.highlight {
+      background-color: rgba(0,0,0,.15);
+    }
+  }
+
+  .highlight_card {
+    display: flex;
+    margin: 1rem;
+    width: 220px;
+    height: 330px;
+    justify-content: center;
+    background-color: rgba(0,0,0,.1);
+    border-radius: .25rem;
+    overflow: hidden;
+
+    img {
+      height: 100%;
+      width: 100%;
+      display: none;
+      // filter: blur(8px);
+
+      &.visible {
+        display: block;
+      }
+    }
   }
 }
 
