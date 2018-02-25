@@ -1,3 +1,14 @@
+// Detect url parameter change
+window.onpopstate = function(e) {
+  console.log(e);
+}
+
+// Extract url parameter data
+var getUrlParams = function() {
+  var urlParams = new URLSearchParams(window.location.search);
+  var paramId = urlParams.get('id');
+  return paramId;
+};
 
 // Populate search autocomplete
 var api_key = '641e6e0b8b7681704cad2ffb456475b1';
@@ -65,12 +76,17 @@ $('.autocomplete_suggestions ul').on('mouseenter', 'li', function() {
   }
 });
 
-// Load show page function
+// Load show page and update url parameter
 function gotoShow(id, title) {
+  if (getUrlParams() == id) {
+    return false;
+  }
+  
   $('#content').empty();
   searchbarToggle('hide');
-  var url = document.location.href + '?id=' + id;
-  window.history.replaceState(id, title, url)
+
+  var url = '?id=' + id;
+  window.history.pushState({}, title, url);
 }
 
 // Go to show page on enter press and autocomplete item click
