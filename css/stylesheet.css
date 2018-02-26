@@ -13,14 +13,15 @@ html, body {
   margin: 0; }
 
 header {
-  position: relative; }
+  position: relative;
+  z-index: 9999; }
 
 nav {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  background-color: #e85354; }
+  transition: all .2s ease-out; }
   nav #brand, nav #search_toggle {
     display: inline-block;
     margin: .5rem 1rem; }
@@ -58,6 +59,7 @@ nav {
     padding: .175rem; }
 
 #search {
+  display: none;
   position: relative;
   width: 100%;
   background-color: #e85354; }
@@ -86,14 +88,14 @@ nav {
     opacity: 0.8; }
 
 .autocomplete_suggestions {
+  display: none;
   position: absolute;
-  display: flex;
   justify-content: space-between;
   align-items: flex-start;
   width: 100%;
   height: 100%;
   color: #fff;
-  background-color: #252222;
+  background-color: rgba(37, 34, 34, 0.9);
   z-index: 2; }
   .autocomplete_suggestions ul, .autocomplete_suggestions li {
     list-style-type: none;
@@ -114,10 +116,10 @@ nav {
     width: 220px;
     height: 330px;
     justify-content: center;
-    background-color: rgba(0, 0, 0, 0.1);
     border-radius: .25rem;
     overflow: hidden; }
     .autocomplete_suggestions .highlight_card img {
+      background-color: rgba(0, 0, 0, 0.1);
       height: 100%;
       width: 100%;
       display: none; }
@@ -133,6 +135,27 @@ nav {
 #content {
   position: relative;
   height: 100%; }
+
+.bg_container {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden; }
+  .bg_container .bg_small, .bg_container .bg_large {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    transform: scale(1.05); }
+  .bg_container .bg_small {
+    filter: blur(20px);
+    z-index: 0; }
+  .bg_container .bg_large {
+    z-index: 1; }
 
 footer {
   position: absolute;

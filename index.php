@@ -28,8 +28,6 @@
         </ul>
       </div>
       <section id="content">
-        <h1>En tittel</h1>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ullam ab vero et maiores doloribus illo, itaque ducimus totam unde veniam officia fugiat, sequi. Vero ipsa ratione obcaecati nobis, quod quo.</p>
       </section>
       <footer>
         <div class="container">

@@ -1,3 +1,14 @@
+$(function() {
+
+  if (getUrlParams()) {
+    var showId = getUrlParams();
+    $('#search_toggle svg path').attr('d', 'M15.5,14C15.5,14,14.710000000000008,14,14.710000000000008,14C14.710000000000008,14,14.430000000000007,13.730000000000004,14.430000000000007,13.730000000000004C15.409999999999997,12.590000000000003,16,11.11,16,9.5C16,5.909999999999997,13.090000000000003,3,9.5,3C5.909999999999997,3,3,5.909999999999997,3,9.5C3,13.090000000000003,5.909999999999997,16,9.5,16C11.109999999999985,16,12.590000000000003,15.409999999999997,13.72999999999999,14.430000000000007C13.72999999999999,14.430000000000007,14,14.709999999999994,14,14.710000000000008C14,14.710000000000008,14,15.5,14,15.5C14,15.5,19,20.49000000000001,19,20.49000000000001C19,20.49000000000001,20.49000000000001,19,20.49000000000001,19C20.49000000000001,19,15.5,14,15.5,14C15.5,14,15.5,14,15.5,14M9.5,14C7.009999999999998,14,5,11.990000000000009,5,9.5C5,7.009999999999991,7.010000000000005,5,9.5,5C11.99,5,14,7.010000000000005,14,9.5C14,11.989999999999995,11.99,14,9.5,14C9.5,14,9.5,14,9.5,14');
+    getShowData(showId);
+  } else {
+    searchbarToggle('show');
+  }
+});
+
 // Detect url parameter change
 window.onpopstate = function(e) {
   console.log(e);
@@ -10,9 +21,24 @@ var getUrlParams = function() {
   return paramId;
 };
 
-// Populate search autocomplete
 var api_key = '641e6e0b8b7681704cad2ffb456475b1';
-var dataArray = [];
+var dataArray = {};
+
+// Get show data from tmdb id
+function getShowData(id) {
+  $.ajax({
+    async: true,
+    crossDomain: true,
+    url: 'https://api.themoviedb.org/3/tv/' + id + '?&api_key=' + api_key,
+    dataType: 'jsonp',
+    method: 'GET',
+    success: function(data) {
+      gotoShow(data);
+    }
+  });
+}
+
+// Populate search autocomplete
 function autocompleteSearch(searchQuery) {
   $.ajax({
     async: true,
@@ -21,7 +47,7 @@ function autocompleteSearch(searchQuery) {
     dataType: 'jsonp',
     method: 'GET',
     success: function(data) {
-      dataArray = [];
+      dataArray = {};
       $('.autocomplete_suggestions ul li').remove();
       $('.autocomplete_suggestions .highlight_card img').remove();
 
@@ -44,11 +70,12 @@ function autocompleteSearch(searchQuery) {
             $('.autocomplete_suggestions .highlight_card img').addClass('visible');
           }
 
-          dataArray.push({label: title, value: title, id: tmdbId});
+          dataArray[tmdbId] = data['results'][i];
+          // dataArray.push({id: tmdbId, data: data['results'][i]});
+          // dataArray.push({label: title, value: title, id: tmdbId});
         }
       }
       console.log(data);
-      // console.log(dataArray);
       // TODO REMOVE DATA ARRAY
     }
   });
@@ -77,24 +104,64 @@ $('.autocomplete_suggestions ul').on('mouseenter', 'li', function() {
 });
 
 // Load show page and update url parameter
-function gotoShow(id, title) {
-  if (getUrlParams() == id) {
-    return false;
-  }
-  
-  $('#content').empty();
+function gotoShow(show) {
+  console.log(show);
+
   searchbarToggle('hide');
 
-  var url = '?id=' + id;
-  window.history.pushState({}, title, url);
+  var showTitle = show['name'];
+  var backdrop = show['backdrop_path'];
+  var backdropSmall = 'https://image.tmdb.org/t/p/w45' + backdrop;
+  var backdropLarge = 'https://image.tmdb.org/t/p/w1280' + backdrop;
+
+
+  var url = '?id=' + show['id'];
+  window.history.pushState({}, showTitle, url);
+
+  $('#content').empty();
+  $('#content').before('<div class="bg_container"></div>');
+
+  var imgSmall = new Image();
+  var imgLarge = new Image();
+  var imgLargeLoaded = false;
+  var delayTimer = false;
+
+  imgLarge.onload = function() {
+    imgLargeLoaded = true;
+    $('.bg_container').append('<div class="bg_large"></div>');
+    $('.bg_large').hide().css({
+      'background-image' : 'url(' + backdropLarge + ')'
+    });
+
+    $('.bg_large').fadeIn(300);
+  }
+
+  imgSmall.onload = function() {
+    setTimeout(function() {
+      if (!imgLargeLoaded) { // Large img not loaded 50ms after small img
+        $('.bg_small').show();
+      }
+    }, 50);
+    $('.bg_container').append('<div class="bg_small"></div>');
+    $('.bg_small').hide().css({
+      'background-image' : 'url(' + backdropSmall + ')'
+    });
+
+    imgLarge.src = backdropLarge;
+  }
+
+  imgSmall.src = backdropSmall;
+
+
 }
 
 // Go to show page on enter press and autocomplete item click
 $('.autocomplete_suggestions ul').on('click', 'li', function() {
   var tmdbId = $(this).data('id');
-  var showTitle = $(this).text();
 
-  gotoShow(tmdbId, showTitle);
+  if (getUrlParams() != tmdbId) {
+    getShowData(tmdbId);
+  }
 });
 
 
@@ -117,7 +184,10 @@ function searchbarToggle(e) {
       'opacity': 1
     });
 
-    $('.autocomplete_suggestions').slideUp(200, 'easeInOutQuad');
+    $('nav').css('background-color', 'rgba(37,34,34,0)');
+
+    // $('.autocomplete_suggestions').slideUp(200, 'easeInOutQuad');
+    $('.autocomplete_suggestions').fadeOut(200);
   }
 
   if (e == 'show') {
@@ -135,7 +205,11 @@ function searchbarToggle(e) {
       'opacity': 1
     });
 
-    $('.autocomplete_suggestions').slideDown(200, 'easeInOutQuad');
+    $('nav').css('background-color', 'rgba(37,34,34,0.9)');
+
+    $('.autocomplete_suggestions').css('display', 'flex').hide();
+    // $('.autocomplete_suggestions').slideDown(200, 'easeInOutQuad');
+    $('.autocomplete_suggestions').fadeIn(200);
   }
 
   anime({

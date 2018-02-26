@@ -27,6 +27,7 @@ html, body {
 
 header {
   position: relative;
+  z-index: 9999;
 }
 
 nav {
@@ -35,7 +36,8 @@ nav {
   justify-content: space-between;
   align-items: center;
   // padding: 1rem;
-  background-color: $red;
+  // background-color: $red;
+  transition: all .2s ease-out;
 
   #brand, #search_toggle {
     display: inline-block;
@@ -80,6 +82,7 @@ nav {
 }
 
 #search {
+  display: none;
   // margin-top: 1rem;
   position: relative;
   width: 100%;
@@ -126,15 +129,15 @@ nav {
 }
 
 .autocomplete_suggestions {
-  //TEMP display: none;
+  display: none;
   position: absolute;
-  display: flex;
+  // display: flex;
   justify-content: space-between;
   align-items: flex-start;
   width: 100%;
   height: 100%;
   color: $white;
-  background-color: $darkgray;
+  background-color: rgba(37,34,34,0.9);
   z-index: 2;
 
   ul, li {
@@ -165,11 +168,11 @@ nav {
     width: 220px;
     height: 330px;
     justify-content: center;
-    background-color: rgba(0,0,0,.1);
     border-radius: .25rem;
     overflow: hidden;
 
     img {
+      background-color: rgba(0,0,0,.1);
       height: 100%;
       width: 100%;
       display: none;
@@ -195,6 +198,35 @@ nav {
 #content {
   position: relative;
   height: 100%;
+}
+
+.bg_container {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+
+  .bg_small, .bg_large {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    transform: scale(1.05);
+  }
+
+  .bg_small {
+    filter: blur(20px);
+    z-index: 0;
+  }
+
+  .bg_large {
+    z-index: 1;
+  }
+
 }
 
 
