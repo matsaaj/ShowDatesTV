@@ -33,7 +33,35 @@ function getShowData(id) {
     dataType: 'jsonp',
     method: 'GET',
     success: function(data) {
-      gotoShow(data);
+      var request;
+      var showData = data;
+      // gotoShow(data);
+      console.log(data);
+
+      // Abort pending request
+      if (request) {
+        request.abort();
+      }
+
+      // TODO: Serialize data?
+
+      // Fire request to show.php
+      request = $.ajax({
+        url: './show.php',
+        type: 'post',
+        data: showData
+      });
+
+      // Callback on success
+      request.done(function() {
+        console.log('Request success!');
+        // window.location.href = './show.php';
+      });
+
+      // Callback on failure
+      request.fail(function() {
+        console.log('Request failure!');
+      });
     }
   });
 }

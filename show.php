@@ -6,6 +6,6 @@
       //'cache' => './compilation_cache',
   ));
 
-  echo $twig->render('base.twig', array());
+  echo $twig->render('showpage.twig', array());
 
 ?>
