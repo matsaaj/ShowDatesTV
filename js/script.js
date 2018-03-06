@@ -10,9 +10,13 @@ $(function() {
 });
 
 // Detect url parameter change
-window.onpopstate = function(e) {
-  console.log(e);
-}
+window.onpopstate = function(event) {
+  if (event.state) {
+    getShowData(event.state);
+  } else {
+    window.location.href = './';
+  }
+};
 
 // Extract url parameter data
 var getUrlParams = function() {
@@ -33,35 +37,10 @@ function getShowData(id) {
     dataType: 'jsonp',
     method: 'GET',
     success: function(data) {
-      var request;
-      var showData = data;
-      // gotoShow(data);
-      console.log(showData);
-
-      // Abort pending request
-      if (request) {
-        request.abort();
-      }
-
-      // TODO: Serialize data?
-
-      // Fire request to show.php
-      request = $.ajax({
-        url: 'show.php',
-        type: 'get',
-        data: showData
-      });
-
-      // Callback on success
-      request.done(function() {
-        console.log('Request success!');
-        // window.location.href = 'show.php';
-      });
-
-      // Callback on failure
-      request.fail(function() {
-        console.log('Request failure!');
-      });
+      gotoShow(data);
+    },
+    error: function(data) {
+      window.location.href = './';
     }
   });
 }
@@ -85,17 +64,34 @@ function autocompleteSearch(searchQuery) {
           var tmdbId = data['results'][i]['id'];
           var backdrop = data['results'][i]['backdrop_path'];
           var poster = data['results'][i]['poster_path'];
+          var posterExists = false;
+          var posterSmall = 'https://image.tmdb.org/t/p/w92' + poster;
           // TODO: ADD YEAR TO TITLE, f.ex. Game Of Thrones (2014)
+
+          // Check if image(poster) exists
+          // TODO: CLEAR IMAGE OBJECT FROM BUFFER/CACHE
+          if (poster != null) {
+            var image = new Image();
+            image.src = posterSmall;
+
+            if (image.width != 0) {
+              posterExists = true;
+            }
+          }
 
           $('.autocomplete_suggestions ul').append('<li>' + title + '</li>');
           $('.autocomplete_suggestions ul li').eq(i).data('id', tmdbId);
-          $('.autocomplete_suggestions .highlight_card').append('<img src="https://image.tmdb.org/t/p/w92' + poster +'">');
-          $('.autocomplete_suggestions .highlight_card img').eq(i).data('imgSrc', poster);
-          // TODO: Large image loading
+          if (posterExists) {
+            $('.autocomplete_suggestions .highlight_card').append('<img src="' + posterSmall +'">');
+            $('.autocomplete_suggestions .highlight_card img').eq(i).data('imgSrc', poster);
+            // TODO: Large image loading
+          }
 
           if (i == 0) {
             $('.autocomplete_suggestions ul li').eq(i).addClass('highlight');
-            $('.autocomplete_suggestions .highlight_card img').addClass('visible');
+            if (posterExists) {
+              $('.autocomplete_suggestions .highlight_card img').addClass('visible');
+            }
           }
 
           dataArray[tmdbId] = data['results'][i];
@@ -103,7 +99,7 @@ function autocompleteSearch(searchQuery) {
           // dataArray.push({label: title, value: title, id: tmdbId});
         }
       }
-      console.log(data);
+      // console.log(data);
       // TODO REMOVE DATA ARRAY
     }
   });
@@ -131,6 +127,15 @@ $('.autocomplete_suggestions ul').on('mouseenter', 'li', function() {
   }
 });
 
+function displayShowInfo(show) {
+  $('#content > *:not(.autocomplete_suggestions)').remove();
+
+  var showTitle = show['name'];
+
+  $('#content').append('<h1>' + showTitle + '</h1>');
+
+}
+
 // Load show page and update url parameter
 function gotoShow(show) {
   console.log(show);
@@ -142,11 +147,13 @@ function gotoShow(show) {
   var backdropSmall = 'https://image.tmdb.org/t/p/w45' + backdrop;
   var backdropLarge = 'https://image.tmdb.org/t/p/w1280' + backdrop;
 
+  document.title = showTitle + ' - Showdates.tv';
 
-  var url = '?id=' + show['id'];
-  window.history.pushState({}, showTitle, url);
-
-  $('#content').empty();
+  $('#content > *:not(.autocomplete_suggestions)').remove();
+  // $('#content').empty();
+  if ($('.bg_container')[0]) {
+    $('.bg_container').addClass('previous');
+  }
   $('#content').before('<div class="bg_container"></div>');
 
   var imgSmall = new Image();
@@ -155,23 +162,31 @@ function gotoShow(show) {
   var delayTimer = false;
 
   imgLarge.onload = function() {
+    console.log('large img loaded');
     imgLargeLoaded = true;
-    $('.bg_container').append('<div class="bg_large"></div>');
-    $('.bg_large').hide().css({
+    $('.bg_container:not(.previous)').append('<div class="bg_large"></div>');
+    $('.bg_container:not(.previous) .bg_large').hide().css({
       'background-image' : 'url(' + backdropLarge + ')'
     });
 
-    $('.bg_large').fadeIn(300);
+    console.log('showing large img');
+    $('.bg_container:not(.previous) .bg_large').fadeIn(300);
+
+    setTimeout(function() {
+      $('.bg_container.previous').remove();
+    }, 300);
   }
 
   imgSmall.onload = function() {
+    console.log('small img loaded');
     setTimeout(function() {
       if (!imgLargeLoaded) { // Large img not loaded 50ms after small img
-        $('.bg_small').show();
+        console.log('showing small img');
+        $('.bg_container:not(.previous) .bg_small').show();
       }
     }, 50);
-    $('.bg_container').append('<div class="bg_small"></div>');
-    $('.bg_small').hide().css({
+    $('.bg_container:not(.previous)').append('<div class="bg_small"></div>');
+    $('.bg_container:not(.previous) .bg_small').hide().css({
       'background-image' : 'url(' + backdropSmall + ')'
     });
 
@@ -180,15 +195,22 @@ function gotoShow(show) {
 
   imgSmall.src = backdropSmall;
 
+  displayShowInfo(show);
 
 }
 
 // Go to show page on enter press and autocomplete item click
 $('.autocomplete_suggestions ul').on('click', 'li', function() {
   var tmdbId = $(this).data('id');
+  var showTitle = $(this).text();
 
   if (getUrlParams() != tmdbId) {
+    var url = '?id=' + tmdbId;
+    window.history.pushState(tmdbId, showTitle, url);
+
     getShowData(tmdbId);
+  } else {
+    searchbarToggle('hide');
   }
 });
 

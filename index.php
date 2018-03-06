@@ -6,6 +6,13 @@
       //'cache' => './compilation_cache',
   ));
 
+  /*
+  if (isset($_GET['id'])) {
+    echo $twig->render('showpage.twig', array());
+  } else {
+    echo $twig->render('base.twig', array());
+  }
+  */
   echo $twig->render('base.twig', array());
 
 ?>

@@ -90,20 +90,22 @@ nav {
 .autocomplete_suggestions {
   display: none;
   position: absolute;
-  justify-content: space-between;
-  align-items: flex-start;
   width: 100%;
-  height: 100%;
   color: #fff;
   background-color: rgba(37, 34, 34, 0.9);
-  z-index: 2; }
+  z-index: 2;
+  overflow-y: auto; }
   .autocomplete_suggestions ul, .autocomplete_suggestions li {
     list-style-type: none;
     padding: 0; }
   .autocomplete_suggestions ul {
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
     margin: .5rem;
     flex: 2; }
   .autocomplete_suggestions li {
+    width: 100%;
     padding: 1rem 1rem;
     border-radius: .25rem;
     margin: .5rem 0;
@@ -111,6 +113,7 @@ nav {
     .autocomplete_suggestions li.highlight {
       background-color: rgba(0, 0, 0, 0.15); }
   .autocomplete_suggestions .highlight_card {
+    position: relative;
     display: flex;
     margin: 1rem;
     width: 220px;
@@ -128,19 +131,22 @@ nav {
 
 .content_container {
   position: relative;
+  display: flex;
+  flex-direction: column;
   min-height: 100%;
-  height: 100%;
-  overflow: hidden; }
+  height: 100%; }
 
 #content {
   position: relative;
-  height: 100%; }
+  display: flex;
+  flex-grow: 1; }
 
 .bg_container {
   position: absolute;
   top: 0;
   height: 100%;
   width: 100%;
+  z-index: 0;
   overflow: hidden; }
   .bg_container .bg_small, .bg_container .bg_large {
     position: absolute;
@@ -158,13 +164,14 @@ nav {
     z-index: 1; }
 
 footer {
-  position: absolute;
+  position: relative;
+  display: block;
   width: 100%;
-  bottom: 0;
   padding: 1.5rem;
   z-index: 3; }
   footer .container {
     position: relative;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     border-top: 1px solid #e85354; }
