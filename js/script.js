@@ -36,7 +36,7 @@ function getShowData(id) {
       var request;
       var showData = data;
       // gotoShow(data);
-      console.log(data);
+      console.log(showData);
 
       // Abort pending request
       if (request) {
@@ -47,15 +47,15 @@ function getShowData(id) {
 
       // Fire request to show.php
       request = $.ajax({
-        url: './show.php',
-        type: 'post',
+        url: 'show.php',
+        type: 'get',
         data: showData
       });
 
       // Callback on success
       request.done(function() {
         console.log('Request success!');
-        // window.location.href = './show.php';
+        // window.location.href = 'show.php';
       });
 
       // Callback on failure
