@@ -234,7 +234,10 @@ function searchbarToggle(e) {
       'opacity': 1
     });
 
-    $('nav').css('background-color', 'rgba(37,34,34,0)');
+    // REMOVE?
+      // $('nav').css('background-color', 'rgba(37,34,34,0)');
+      $('.dark_overlay').fadeOut(200);
+    //
 
     // $('.autocomplete_suggestions').slideUp(200, 'easeInOutQuad');
     $('.autocomplete_suggestions').fadeOut(200);
@@ -255,7 +258,10 @@ function searchbarToggle(e) {
       'opacity': 1
     });
 
-    $('nav').css('background-color', 'rgba(37,34,34,0.9)');
+    // REMOVE?
+      // $('nav').css('background-color', 'rgba(37,34,34,0.9)');
+      $('.dark_overlay').fadeIn(200);
+    //
 
     $('.autocomplete_suggestions').css('display', 'flex').hide();
     // $('.autocomplete_suggestions').slideDown(200, 'easeInOutQuad');
