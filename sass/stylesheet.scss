@@ -22,6 +22,11 @@ html, body {
   margin: 0;
 }
 
+.wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
 
 // HEADER //
 
@@ -31,6 +36,10 @@ header {
 }
 
 nav {
+  transition: all .2s ease-out;
+}
+
+.nav_wrapper {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -93,9 +102,11 @@ nav {
   }
 
   .searchbar_input {
+    display: block;
     width: 100%;
     padding: 1.5rem;
-    background: rgba(0,0,0,.125);
+    background: transparent;
+    // background: rgba(0,0,0,.125);
     // border-radius: .25rem;
     outline: 0;
     border: 0;
@@ -131,10 +142,13 @@ nav {
 .autocomplete_suggestions {
   display: none;
   position: absolute;
+  // top: 0;
+  left: 0;
   // display: flex;
   width: 100%;
+  height: 100%;
   color: $white;
-  background-color: rgba(37,34,34,0.9);
+  // background-color: rgba(37,34,34,0.9);
   z-index: 2;
   overflow-y: auto;
 
@@ -158,6 +172,11 @@ nav {
     border-radius: .25rem;
     margin: .5rem 0;
     cursor: pointer;
+
+    .release_year {
+      margin-left: 4px;
+      // TODO LIGHTEN COLOR
+    }
 
     &.highlight {
       background-color: rgba(0,0,0,.15);
@@ -191,8 +210,19 @@ nav {
 
 // CONTENT //
 
+.dark_overlay {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(37,34,34,0.9);
+  z-index: 1;
+}
+
 .content_container {
-  position: relative;
+  // position: relative;
   display: flex;
   flex-direction: column;
   min-height: 100%;
@@ -200,15 +230,17 @@ nav {
 }
 
 #content {
-  position: relative;
+  position: relative; // remove?
   display: flex;
   flex-grow: 1;
   // height: 100%;
+  color: #fff;
 }
 
 .bg_container {
   position: absolute;
   top: 0;
+  left: 0;
   height: 100%;
   width: 100%;
   z-index: 0;
@@ -243,8 +275,8 @@ nav {
 footer {
   position: relative;
   display: block;
-  width: 100%;
-  padding: 1.5rem;
+  width: calc(100%-3rem);
+  margin: 0 1.5rem 1.5rem;
   z-index: 3;
 
   .container {

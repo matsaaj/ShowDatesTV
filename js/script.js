@@ -66,7 +66,7 @@ function autocompleteSearch(searchQuery) {
           var poster = data['results'][i]['poster_path'];
           var posterExists = false;
           var posterSmall = 'https://image.tmdb.org/t/p/w92' + poster;
-          // TODO: ADD YEAR TO TITLE, f.ex. Game Of Thrones (2014)
+          var releaseYear = '(' + data['results'][i]['first_air_date'].slice(0,4) + ')';
 
           // Check if image(poster) exists
           // TODO: CLEAR IMAGE OBJECT FROM BUFFER/CACHE
@@ -79,7 +79,7 @@ function autocompleteSearch(searchQuery) {
             }
           }
 
-          $('.autocomplete_suggestions ul').append('<li>' + title + '</li>');
+          $('.autocomplete_suggestions ul').append('<li>' + title + '<span class="release_year">' + releaseYear + '</span></li>');
           $('.autocomplete_suggestions ul li').eq(i).data('id', tmdbId);
           if (posterExists) {
             $('.autocomplete_suggestions .highlight_card').append('<img src="' + posterSmall +'">');

@@ -12,20 +12,27 @@ html, body {
   padding: 0;
   margin: 0; }
 
+.wrapper {
+  max-width: 1400px;
+  margin: 0 auto; }
+
 header {
   position: relative;
   z-index: 9999; }
 
 nav {
+  transition: all .2s ease-out; }
+
+.nav_wrapper {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   transition: all .2s ease-out; }
-  nav #brand, nav #search_toggle {
+  .nav_wrapper #brand, .nav_wrapper #search_toggle {
     display: inline-block;
     margin: .5rem 1rem; }
-  nav #brand {
+  .nav_wrapper #brand {
     padding: .5rem;
     color: #fff;
     text-decoration: none;
@@ -33,7 +40,7 @@ nav {
     font-size: 1rem;
     font-weight: 700;
     transition: all .15s ease; }
-  nav #search_toggle {
+  .nav_wrapper #search_toggle {
     position: relative;
     cursor: pointer;
     height: 32px;
@@ -47,7 +54,7 @@ nav {
     /* IE 10+ */
     user-select: none;
     /* Likely future */ }
-    nav #search_toggle svg {
+    .nav_wrapper #search_toggle svg {
       position: absolute;
       margin: auto;
       top: 0;
@@ -55,7 +62,7 @@ nav {
       bottom: 0;
       right: 0;
       transition: all .15s ease; }
-  nav #search_toggle:hover svg {
+  .nav_wrapper #search_toggle:hover svg {
     padding: .175rem; }
 
 #search {
@@ -66,9 +73,10 @@ nav {
   #search input {
     font-family: 'Nunito Sans', sans-serif; }
   #search .searchbar_input {
+    display: block;
     width: 100%;
     padding: 1.5rem;
-    background: rgba(0, 0, 0, 0.125);
+    background: transparent;
     outline: 0;
     border: 0;
     color: #ffefb9;
@@ -90,9 +98,10 @@ nav {
 .autocomplete_suggestions {
   display: none;
   position: absolute;
+  left: 0;
   width: 100%;
+  height: 100%;
   color: #fff;
-  background-color: rgba(37, 34, 34, 0.9);
   z-index: 2;
   overflow-y: auto; }
   .autocomplete_suggestions ul, .autocomplete_suggestions li {
@@ -110,6 +119,8 @@ nav {
     border-radius: .25rem;
     margin: .5rem 0;
     cursor: pointer; }
+    .autocomplete_suggestions li .release_year {
+      margin-left: 4px; }
     .autocomplete_suggestions li.highlight {
       background-color: rgba(0, 0, 0, 0.15); }
   .autocomplete_suggestions .highlight_card {
@@ -129,8 +140,17 @@ nav {
       .autocomplete_suggestions .highlight_card img.visible {
         display: block; }
 
+.dark_overlay {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(37, 34, 34, 0.9);
+  z-index: 1; }
+
 .content_container {
-  position: relative;
   display: flex;
   flex-direction: column;
   min-height: 100%;
@@ -139,11 +159,13 @@ nav {
 #content {
   position: relative;
   display: flex;
-  flex-grow: 1; }
+  flex-grow: 1;
+  color: #fff; }
 
 .bg_container {
   position: absolute;
   top: 0;
+  left: 0;
   height: 100%;
   width: 100%;
   z-index: 0;
@@ -166,8 +188,8 @@ nav {
 footer {
   position: relative;
   display: block;
-  width: 100%;
-  padding: 1.5rem;
+  width: calc(100%-3rem);
+  margin: 0 1.5rem 1.5rem;
   z-index: 3; }
   footer .container {
     position: relative;
