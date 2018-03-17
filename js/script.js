@@ -67,16 +67,24 @@ function autocompleteSearch(searchQuery) {
           var posterExists = false;
           var posterSmall = 'https://image.tmdb.org/t/p/w92' + poster;
           var releaseYear = '(' + data['results'][i]['first_air_date'].slice(0,4) + ')';
+          console.log(title + ' ' + posterSmall);
 
           // Check if image(poster) exists
           // TODO: CLEAR IMAGE OBJECT FROM BUFFER/CACHE
           if (poster != null) {
-            var image = new Image();
-            image.src = posterSmall;
-
-            if (image.width != 0) {
-              posterExists = true;
+            if (image) {
+              console.log("IMAGE EXISTS");
             }
+
+            var image = new Image();
+
+            image.onload = function() {
+              if (image.width != 0) {
+                posterExists = true;
+              }
+            };
+
+            image.src = posterSmall;
           }
 
           $('.autocomplete_suggestions ul').append('<li>' + title + '<span class="release_year">' + releaseYear + '</span></li>');
@@ -86,6 +94,7 @@ function autocompleteSearch(searchQuery) {
             $('.autocomplete_suggestions .highlight_card img').eq(i).data('imgSrc', poster);
             // TODO: Large image loading
           }
+          console.log(title + ' ' + posterExists);
 
           if (i == 0) {
             $('.autocomplete_suggestions ul li').eq(i).addClass('highlight');
@@ -227,6 +236,9 @@ function searchbarToggle(e) {
     $('#search input').animate({
       'opacity': .5
     }, 200, function() {
+      // Clear autocomplete suggestions from dom
+      $('.highlight_card img').remove();
+      $('.autocomplete_suggestions ul li').remove();
       $('.searchbar_input').val('');
     });
 
