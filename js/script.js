@@ -59,42 +59,33 @@ function autocompleteSearch(searchQuery) {
       $('.autocomplete_suggestions .highlight_card img').remove();
 
       if ($('.searchbar_input').val().length > 1) {
+        var posterArray = {};
         for (i = 0; i < data['results'].length && i < 5; i++) {
           var title = data['results'][i]['name'];
           var tmdbId = data['results'][i]['id'];
           var backdrop = data['results'][i]['backdrop_path'];
           var poster = data['results'][i]['poster_path'];
           var posterExists = false;
-          var posterSmall = 'https://image.tmdb.org/t/p/w92' + poster;
+          var posterSmall = 'https://image.tmdb.org/t/p/w342' + poster;
           var releaseYear = '(' + data['results'][i]['first_air_date'].slice(0,4) + ')';
-          console.log(title + ' ' + posterSmall);
 
           // Check if image(poster) exists
           // TODO: CLEAR IMAGE OBJECT FROM BUFFER/CACHE
           if (poster != null) {
-            if (image) {
-              console.log("IMAGE EXISTS");
-            }
-
-            var image = new Image();
-
-            image.onload = function() {
-              if (image.width != 0) {
-                posterExists = true;
-              }
-            };
-
-            image.src = posterSmall;
+            // console.log(title + ' ' + posterSmall + ' (IMAGE EXISTS)');
+            posterExists = true;
+          } else {
+            // console.log(title + ' ' + posterSmall + ' (NO IMAGE)');
           }
 
           $('.autocomplete_suggestions ul').append('<li>' + title + '<span class="release_year">' + releaseYear + '</span></li>');
           $('.autocomplete_suggestions ul li').eq(i).data('id', tmdbId);
           if (posterExists) {
-            $('.autocomplete_suggestions .highlight_card').append('<img src="' + posterSmall +'">');
-            $('.autocomplete_suggestions .highlight_card img').eq(i).data('imgSrc', poster);
+            $('.autocomplete_suggestions .highlight_card').append('<img src="' + posterSmall +'" data-index=' + i + '>');
+            // ??? $('.autocomplete_suggestions .highlight_card img').eq(i).data('imgSrc', poster);
+            // $('.autocomplete_suggestions .highlight_card img').eq(i).data('index', i);
             // TODO: Large image loading
           }
-          console.log(title + ' ' + posterExists);
 
           if (i == 0) {
             $('.autocomplete_suggestions ul li').eq(i).addClass('highlight');
@@ -114,7 +105,23 @@ function autocompleteSearch(searchQuery) {
   });
 }
 
-// Autcomplete search query
+// Autocomplete keyboard inputs
+$('.searchbar_input').keyup(function(e) {
+  switch (e.keyCode) {
+    case 13: // Enter
+      //
+      break;
+    case 38: // Up arrow
+      //
+      break;
+    case 40: // Down arrow
+      //
+      break;
+  }
+});
+
+
+// Autocomplete search query
 $('.searchbar_input').on('input paste', function() {
   var searchQuery = $(this).val();
 
@@ -130,9 +137,10 @@ $('.autocomplete_suggestions ul').on('mouseenter', 'li', function() {
   if (!$(this).hasClass('highlight')) {
     $('.autocomplete_suggestions ul li').removeClass('highlight');
     $(this).addClass('highlight');
+    var itemIndex = $(this).index();
 
     $('.highlight_card img').removeClass('visible');
-    $('.highlight_card img').eq($(this).index()).addClass('visible');
+    $('.highlight_card img[data-index="' + itemIndex + '"]').addClass('visible');
   }
 });
 
