@@ -105,21 +105,6 @@ function autocompleteSearch(searchQuery) {
   });
 }
 
-// Autocomplete keyboard inputs
-$('.searchbar_input').keyup(function(e) {
-  switch (e.keyCode) {
-    case 13: // Enter
-      //
-      break;
-    case 38: // Up arrow
-      //
-      break;
-    case 40: // Down arrow
-      //
-      break;
-  }
-});
-
 
 // Autocomplete search query
 $('.searchbar_input').on('input paste', function() {
@@ -216,18 +201,79 @@ function gotoShow(show) {
 
 }
 
-// Go to show page on enter press and autocomplete item click
-$('.autocomplete_suggestions ul').on('click', 'li', function() {
-  var tmdbId = $(this).data('id');
-  var showTitle = $(this).text();
 
-  if (getUrlParams() != tmdbId) {
+// Disable input cursor movement on up/down arrow
+$('.searchbar_input').keydown(function(e) {
+  if (e.which == 38 || e.which == 40) {
+    e.preventDefault();
+  }
+});
+
+// Change highlighted(selected) item in autocomplete
+function changeHighlightItem(direction) {
+  var oldIndex = $('.autocomplete_suggestions ul li.highlight').index();
+  var itemCnt = $('.autocomplete_suggestions ul li').length - 1;
+  var newIndex;
+
+  if (direction == 'next') {
+    newIndex = oldIndex + 1;
+  }
+  if (direction == 'previous') {
+    newIndex = oldIndex - 1;
+  }
+
+  if (newIndex < 0) {
+    newIndex = itemCnt;
+  } else if (newIndex > itemCnt) {
+    newIndex = 0;
+  }
+
+  $('.autocomplete_suggestions ul li').removeClass('highlight');
+  $('.autocomplete_suggestions ul li').eq(newIndex).addClass('highlight');
+
+  $('.highlight_card img').removeClass('visible');
+  $('.highlight_card img[data-index="' + newIndex + '"]').addClass('visible');
+}
+
+// Go to show page from autocomplete selection
+function selectSearchSuggestion(tmdbId, showTitle) {
+  if (getUrlParams() != tmdbId) { // Selection is not the page you are currently on
     var url = '?id=' + tmdbId;
     window.history.pushState(tmdbId, showTitle, url);
 
     getShowData(tmdbId);
   } else {
     searchbarToggle('hide');
+  }
+}
+
+// Go to show page on autocomplete item click
+$('.autocomplete_suggestions ul').on('click', 'li', function() {
+  var tmdbId = $(this).data('id');
+  var showTitle = $(this).text();
+
+  selectSearchSuggestion(tmdbId, showTitle);
+});
+
+
+// Autocomplete keyboard input functions (enter and arrows)
+$('.searchbar_input').keyup(function(e) {
+  switch (e.keyCode) {
+    case 13: // Enter -> Go to show
+      var selection = $('.autocomplete_suggestions ul li.highlight');
+      var selectionId = $(selection).data('id');
+      var selectionTitle = $(selection).contents().filter(function() {
+        return this.nodeType == 3;
+      }).text();
+
+      selectSearchSuggestion(selectionId, selectionTitle);
+      break;
+    case 38: // Up arrow -> Highlight previous selection
+      changeHighlightItem('previous');
+      break;
+    case 40: // Down arrow -> Higlight next selection
+      changeHighlightItem('next');
+      break;
   }
 });
 
