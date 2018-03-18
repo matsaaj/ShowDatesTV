@@ -236,6 +236,9 @@ nav {
   flex-grow: 1;
   // height: 100%;
   color: #fff;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .bg_container {
@@ -267,6 +270,11 @@ nav {
     z-index: 1;
   }
 
+}
+
+// SHOW INFO //
+.show_info {
+  padding: 1.5rem;
 }
 
 

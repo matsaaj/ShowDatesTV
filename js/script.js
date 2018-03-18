@@ -45,6 +45,17 @@ function getShowData(id) {
   });
 }
 
+// Get show data for a specific season from tmdb id and season number
+function getSeasonData(id, seasonNumber) {
+  return $.ajax({
+    async: true,
+    crossDomain: true,
+    url: 'https://api.themoviedb.org/3/tv/' + id + '/season/' + seasonNumber + '?&api_key=' + api_key,
+    dataType: 'jsonp',
+    method: 'GET'
+  });
+}
+
 // Populate search autocomplete
 function autocompleteSearch(searchQuery) {
   $.ajax({
@@ -114,6 +125,7 @@ $('.searchbar_input').on('input paste', function() {
     autocompleteSearch(searchQuery);
   } else {
     $('.autocomplete_suggestions ul li').remove();
+    $('.autocomplete_suggestions .highlight_card img').remove();
   }
 });
 
@@ -130,11 +142,69 @@ $('.autocomplete_suggestions ul').on('mouseenter', 'li', function() {
 });
 
 function displayShowInfo(show) {
-  $('#content > *:not(.autocomplete_suggestions)').remove();
+  $('.show_info').remove();
+  $('#content').append('<div class="show_info"></div>');
 
+  var showId = show['id'];
   var showTitle = show['name'];
+  // var releaseYear = show['first_air_date'].slice(0,4);
+  var seasonsCnt = show['seasons'].length - 1;
+  var seasonNumber = show['seasons'][seasonsCnt]['season_number'];
+  var releaseDate = show['seasons'][seasonsCnt]['air_date'];
+  var nextReleaseDate;
+  var nextEpisode = 1;
 
-  $('#content').append('<h1>' + showTitle + '</h1>');
+  var seasonData = getSeasonData(showId, seasonNumber);
+  seasonData.then(function(seasonData) {
+    console.log(seasonData);
+
+    releaseDate = new Date(releaseDate);
+    var dateToday = Date.today().setTimezone('UTC');
+    if (Date.compare(releaseDate, dateToday) == -1) { // No release date announced / latest season on-going / Cancelled
+      if (show['status'].toLowerCase() == 'ended' || show['status'].toLowerCase() == 'canceled') { // CANCELLED
+        var suffix = '';
+        if (seasonNumber > 1) {
+          suffix = 's';
+        }
+        console.log('SHOW CANCELLED');
+      } else { // ON-GOING OR NOT ANNOUNCED
+        var episodeCnt = seasonData['episodes'].length;
+        for (i = episodeCnt - 1; i + 1 > 0; i--) { // Loop through each episode in season from last to first
+          var episodeRelease = new Date(seasonData['episodes'][i]['air_date']);
+          nextEpisode = seasonData['episodes'][i]['episode_number'];
+          nextReleaseDate = episodeRelease;
+          dateToday = Date.parse('March 21').setTimezone('UTC');;
+
+          if (Date.compare(episodeRelease, dateToday) >= 0) { // Break loop if episode has not been released or is releasing today
+            console.log('NOT RELEASED');
+            // break;
+          }
+          console.log(dateToday);
+          console.log('Ep: ' + nextEpisode);
+          console.log(episodeRelease);
+          console.log(Date.compare(episodeRelease, dateToday));
+          console.log('___________');
+        }
+        // console.log(nextEpisode);
+        // console.log(nextReleaseDate);
+      }
+    } else { // Season release coming up
+      console.log('SEASON RELEASE ANNOUNCED');
+      console.log('RELEASEDATE: ' + releaseDate);
+      dateToday = Date.today().setTimezone('UTC');
+      console.log('DATETODAY: ' + dateToday);
+
+      console.log(Date.compare(releaseDate, dateToday));
+
+      if (Date.compare(releaseDate, dateToday) != -1) {
+      } else {
+      }
+    }
+
+    $('.show_info').append('<h1 class="show_title">' + showTitle + '</h1>');
+    $('.show_info').append('<h2 class="episode_number">' + showTitle + '</h2>');
+  });
+  // promise.then(data => alert(data), error => alert(error));
 
 }
 
@@ -151,7 +221,7 @@ function gotoShow(show) {
 
   document.title = showTitle + ' - Showdates.tv';
 
-  $('#content > *:not(.autocomplete_suggestions)').remove();
+  $('.show_info').remove();
   // $('#content').empty();
   if ($('.bg_container')[0]) {
     $('.bg_container').addClass('previous');
@@ -348,5 +418,27 @@ $('#search_toggle').on('click', function() {
     searchbarToggle('hide');
   } else {
     searchbarToggle('show');
+  }
+});
+
+// Hide autocomplete on click outside
+$('.content_container').click(function(e) {
+  if ($('.autocomplete_suggestions').is(':visible')) {
+
+    if ($(e.target).closest('div.autocomplete_suggestions').length === 0) { // Target not autocomplete_suggestions div
+      if ($(e.target).closest('div#search_toggle').length !== 0) { // Target is div#search_toggle
+        return false;
+      } else if ($(e.target).closest('a#brand').length !== 0) { // Target is a#brand
+        return false;
+      } else if ($(e.target).closest('div#search').length !== 0) { // Target is div#search
+        return false;
+      } else { // Target is outside autocomplete -> Hide search
+        console.log('CLICKED OUTSIDE AUTCOMPLETE');
+        searchbarToggle('hide');
+      }
+    } else if ($(e.target).closest('div.autocomplete_suggestions').length !== 0 && $('.autocomplete_suggestions ul').has('li').length == 0) { // Autocomplete suggestion div empty and clicked
+      searchbarToggle('hide');
+    }
+
   }
 });
