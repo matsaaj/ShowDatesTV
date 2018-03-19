@@ -151,58 +151,59 @@ function displayShowInfo(show) {
   var seasonsCnt = show['seasons'].length - 1;
   var seasonNumber = show['seasons'][seasonsCnt]['season_number'];
   var releaseDate = show['seasons'][seasonsCnt]['air_date'];
-  var nextReleaseDate;
-  var nextEpisode = 1;
+  var nextReleaseDate = false;
+  var nextEpisode = false;
+  var cancelled = false;
+  var suffix = '';
 
   var seasonData = getSeasonData(showId, seasonNumber);
   seasonData.then(function(seasonData) {
     console.log(seasonData);
 
-    releaseDate = new Date(releaseDate);
-    var dateToday = Date.today().setTimezone('UTC');
+    releaseDate = Date.parseExact(releaseDate, 'yyyy-MM-dd');
+    var dateToday = Date.today().clearTime();
     if (Date.compare(releaseDate, dateToday) == -1) { // No release date announced / latest season on-going / Cancelled
       if (show['status'].toLowerCase() == 'ended' || show['status'].toLowerCase() == 'canceled') { // CANCELLED
-        var suffix = '';
         if (seasonNumber > 1) {
           suffix = 's';
         }
-        console.log('SHOW CANCELLED');
+        cancelled = true;
       } else { // ON-GOING OR NOT ANNOUNCED
         var episodeCnt = seasonData['episodes'].length;
         for (i = episodeCnt - 1; i + 1 > 0; i--) { // Loop through each episode in season from last to first
-          var episodeRelease = new Date(seasonData['episodes'][i]['air_date']);
+          var episodeRelease = Date.parseExact(seasonData['episodes'][i]['air_date'], 'yyyy-MM-dd');
+
+          if (Date.compare(episodeRelease, dateToday) < 0) { // Break loop if episode has been released (including episode releasing today)
+            break;
+          }
+
           nextEpisode = seasonData['episodes'][i]['episode_number'];
           nextReleaseDate = episodeRelease;
-          dateToday = Date.parse('March 21').setTimezone('UTC');;
-
-          if (Date.compare(episodeRelease, dateToday) >= 0) { // Break loop if episode has not been released or is releasing today
-            console.log('NOT RELEASED');
-            // break;
-          }
-          console.log(dateToday);
-          console.log('Ep: ' + nextEpisode);
-          console.log(episodeRelease);
-          console.log(Date.compare(episodeRelease, dateToday));
-          console.log('___________');
         }
-        // console.log(nextEpisode);
-        // console.log(nextReleaseDate);
+        if (!nextReleaseDate) { // All episodes in current season has been released
+          seasonNumber = seasonNumber + 1;
+        }
       }
-    } else { // Season release coming up
-      console.log('SEASON RELEASE ANNOUNCED');
-      console.log('RELEASEDATE: ' + releaseDate);
-      dateToday = Date.today().setTimezone('UTC');
-      console.log('DATETODAY: ' + dateToday);
-
-      console.log(Date.compare(releaseDate, dateToday));
-
-      if (Date.compare(releaseDate, dateToday) != -1) {
-      } else {
-      }
+    } else { // New season release announced and not released
+      nextReleaseDate = releaseDate;
     }
 
+    console.log('Season: ' + seasonNumber + ' Episode: ' + nextEpisode);
+    console.log('Release date: ' + nextReleaseDate);
+
     $('.show_info').append('<h1 class="show_title">' + showTitle + '</h1>');
-    $('.show_info').append('<h2 class="episode_number">' + showTitle + '</h2>');
+
+    if (nextReleaseDate) { // Release date is known for season or season+episode
+      if (!nextEpisode) { // Season premiere
+        $('.show_info').append('<h2 class="episode_number">Season ' + seasonNumber + ' Premiere</h2>');
+      } else { // Specific episode release
+        $('.show_info').append('<h2 class="episode_number">Season ' + seasonNumber + ' Episode ' + nextEpisode +'</h2>');
+      }
+    } else if (cancelled) { // Show is cancelled
+      $('.show_info').append('<p class="release_details">The show got cancelled after ' + seasonNumber + ' season' + suffix + '.</p>');
+    } else { // Show is not cancelled but release date for next season has not been announced
+      $('.show_info').append('<p class="release_details">The release date for season ' + seasonNumber + ' has not been announced yet.</p>');
+    }
   });
   // promise.then(data => alert(data), error => alert(error));
 
