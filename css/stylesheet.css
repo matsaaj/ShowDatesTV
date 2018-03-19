@@ -183,15 +183,11 @@ nav {
     background-size: cover;
     background-position: center; }
   .bg_container .bg_small {
-    filter: blur(12px);
-    transform: scale(1.2);
-    z-index: 1;
-    transition: all .6s ease; }
+    filter: blur(8px);
+    transform: scale(1.02);
+    z-index: 1; }
   .bg_container .bg_large {
-    filter: blur(12px);
-    z-index: 0;
-    transition: all .3s ease;
-    transition-delay: .3s; }
+    z-index: 0; }
 
 .show_info {
   padding: 1.5rem; }

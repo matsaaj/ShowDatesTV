@@ -142,8 +142,7 @@ $('.autocomplete_suggestions ul').on('mouseenter', 'li', function() {
 });
 
 function displayShowInfo(show) {
-  $('.show_info').remove();
-  $('#content').append('<div class="show_info"></div>');
+  var deferred = $.Deferred();
 
   var showId = show['id'];
   var showTitle = show['name'];
@@ -191,6 +190,8 @@ function displayShowInfo(show) {
     console.log('Season: ' + seasonNumber + ' Episode: ' + nextEpisode);
     console.log('Release date: ' + nextReleaseDate);
 
+    $('.show_info').remove();
+    $('#content').append('<div class="show_info"></div>');
     $('.show_info').append('<h1 class="show_title">' + showTitle + '</h1>');
 
     if (nextReleaseDate) { // Release date is known for season or season+episode
@@ -204,9 +205,11 @@ function displayShowInfo(show) {
     } else { // Show is not cancelled but release date for next season has not been announced
       $('.show_info').append('<p class="release_details">The release date for season ' + seasonNumber + ' has not been announced yet.</p>');
     }
+
+    deferred.resolve();
   });
   // promise.then(data => alert(data), error => alert(error));
-
+  return deferred.promise();
 }
 
 // Load show page and update url parameter
@@ -217,13 +220,15 @@ function gotoShow(show) {
 
   var showTitle = show['name'];
   var backdrop = show['backdrop_path'];
-  var backdropSmall = 'https://image.tmdb.org/t/p/w45' + backdrop;
+  var backdropSmall = 'https://image.tmdb.org/t/p/w300' + backdrop;
   var backdropLarge = 'https://image.tmdb.org/t/p/original' + backdrop;
 
   document.title = showTitle + ' - Showdates.tv';
 
-  $('.show_info').remove();
-  // $('#content').empty();
+  displayShowInfo(show).then(function() {
+  	console.log('SHOW INFO LOADED');
+  });
+
   if ($('.bg_container')[0]) {
     $('.bg_container').addClass('previous');
   }
@@ -239,14 +244,13 @@ function gotoShow(show) {
     imgLargeLoaded = true;
     $('.bg_container:not(.previous)').append('<div class="bg_large"></div>');
     $('.bg_container:not(.previous) .bg_large').css({
-      'background-image' : 'url(' + backdropLarge + ')',
-      'filter' : 'blur(0)'
+      'background-image' : 'url(' + backdropLarge + ')'
     });
 
     console.log('showing large img');
-    $('.bg_container:not(.previous) .bg_small').css({
-      'opacity' : 0
-    });
+    // $('.bg_container:not(.previous) .bg_large').fadeIn(300);
+    $('.bg_container:not(.previous) .bg_small').fadeOut(300);
+
 
     setTimeout(function() {
       $('.bg_container.previous').remove();
@@ -270,9 +274,6 @@ function gotoShow(show) {
   }
 
   imgSmall.src = backdropSmall;
-
-  displayShowInfo(show);
-
 }
 
 
