@@ -206,7 +206,7 @@ function displayShowInfo(show) {
       $('.show_info').append('<p class="release_details">The release date for season ' + seasonNumber + ' has not been announced yet.</p>');
     }
 
-    deferred.resolve();
+    deferred.resolve(showTitle);
   });
   // promise.then(data => alert(data), error => alert(error));
   return deferred.promise();
@@ -215,6 +215,15 @@ function displayShowInfo(show) {
 // Load show page and update url parameter
 function gotoShow(show) {
   console.log(show);
+
+  /*
+  var imgSmall = new Image();
+  imgSmall.src = '';
+  var imgLarge = new Image();
+  imgLarge.src = '';
+  var imgLargeLoaded = false;
+  var delayTimer = false;
+  */
 
   searchbarToggle('hide');
 
@@ -225,21 +234,23 @@ function gotoShow(show) {
 
   document.title = showTitle + ' - Showdates.tv';
 
-  displayShowInfo(show).then(function() {
-  	console.log('SHOW INFO LOADED');
-  });
+  displayShowInfo(show).done(function(e) {
+    console.log(e + ' RESOLVED!');
 
+    if (e != showTitle) {
+      alert('RESOLVE ERR');
+    }
+  });
+  backdropLoader(backdropSmall, backdropLarge).done(function(e) {
+    console.log(e + ' IMG!');
+  });
+  /*
   if ($('.bg_container')[0]) {
     $('.bg_container').addClass('previous');
   }
   $('#content').before('<div class="bg_container"></div>');
 
-  var imgSmall = new Image();
-  var imgLarge = new Image();
-  var imgLargeLoaded = false;
-  var delayTimer = false;
-
-  imgLarge.onload = function() {
+  imgLarge.onload = function(e) {
     console.log('large img loaded');
     imgLargeLoaded = true;
     $('.bg_container:not(.previous)').append('<div class="bg_large"></div>');
@@ -274,6 +285,62 @@ function gotoShow(show) {
   }
 
   imgSmall.src = backdropSmall;
+  */
+}
+
+function backdropLoader(url1, url2) {
+  var deferredImg = $.Deferred();
+
+  var imgSmall = new Image();
+  var imgLarge = new Image();
+  var imgLargeLoaded = false;
+  var delayTimer = false;
+
+  if ($('.bg_container')[0]) {
+    $('.bg_container').addClass('previous');
+  }
+  $('#content').before('<div class="bg_container"></div>');
+
+  imgLarge.onload = function() {
+    console.log('large img loaded');
+    imgLargeLoaded = true;
+    deferredImg.resolve(url2);
+
+    $('.bg_container:not(.previous)').append('<div class="bg_large"></div>');
+    $('.bg_container:not(.previous) .bg_large').css({
+      'background-image' : 'url(' + url2 + ')'
+    });
+
+    console.log('showing large img');
+    // $('.bg_container:not(.previous) .bg_large').fadeIn(300);
+    $('.bg_container:not(.previous) .bg_small').fadeOut(300);
+
+
+    setTimeout(function() {
+      $('.bg_container.previous').remove();
+    }, 300);
+  }
+
+  imgSmall.onload = function() {
+    console.log('small img loaded');
+    deferredImg.resolve(url1);
+
+    setTimeout(function() {
+      if (!imgLargeLoaded) { // Large img not loaded 50ms after small img
+        console.log('showing small img');
+        $('.bg_container:not(.previous) .bg_small').show();
+      }
+    }, 50);
+    $('.bg_container:not(.previous)').append('<div class="bg_small"></div>');
+    $('.bg_container:not(.previous) .bg_small').hide().css({
+      'background-image' : 'url(' + url1 + ')'
+    });
+
+    imgLarge.src = url2;
+  }
+  imgSmall.src = url1;
+
+  return deferredImg.promise();
 }
 
 
