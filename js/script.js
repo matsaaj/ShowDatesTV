@@ -218,7 +218,7 @@ function gotoShow(show) {
   var showTitle = show['name'];
   var backdrop = show['backdrop_path'];
   var backdropSmall = 'https://image.tmdb.org/t/p/w45' + backdrop;
-  var backdropLarge = 'https://image.tmdb.org/t/p/w1280' + backdrop;
+  var backdropLarge = 'https://image.tmdb.org/t/p/original' + backdrop;
 
   document.title = showTitle + ' - Showdates.tv';
 
@@ -238,12 +238,15 @@ function gotoShow(show) {
     console.log('large img loaded');
     imgLargeLoaded = true;
     $('.bg_container:not(.previous)').append('<div class="bg_large"></div>');
-    $('.bg_container:not(.previous) .bg_large').hide().css({
-      'background-image' : 'url(' + backdropLarge + ')'
+    $('.bg_container:not(.previous) .bg_large').css({
+      'background-image' : 'url(' + backdropLarge + ')',
+      'filter' : 'blur(0)'
     });
 
     console.log('showing large img');
-    $('.bg_container:not(.previous) .bg_large').fadeIn(300);
+    $('.bg_container:not(.previous) .bg_small').css({
+      'opacity' : 0
+    });
 
     setTimeout(function() {
       $('.bg_container.previous').remove();
