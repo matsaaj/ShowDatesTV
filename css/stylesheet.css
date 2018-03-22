@@ -183,10 +183,14 @@ nav {
     background-size: cover;
     background-position: center; }
   .bg_container .bg_small {
+    -webkit-filter: blur(8px);
     filter: blur(8px);
     transform: scale(1.02);
     z-index: 1; }
   .bg_container .bg_large {
+    -webkit-filter: blur(8px);
+    filter: blur(8px);
+    transform: scale(1.02);
     z-index: 0; }
   .bg_container.previous {
     z-index: 1; }

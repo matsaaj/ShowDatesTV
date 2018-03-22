@@ -243,8 +243,24 @@ function gotoShow(show) {
   document.title = showTitle + ' - Showdates.tv';
 
   var displayShowInfoPromise = displayShowInfo(show);
-  var backdropLoaderPromise = backdropLoader(backdropSmall, backdropLarge);
+  // var backdropLoaderPromise = backdropLoader(backdropSmall, backdropLarge);
+  var backdropSmallPromise = imgLoader(backdropSmall);
+  var backdropLargePromise = imgLoader(backdropLarge);
 
+
+  backdropSmallPromise.done(function() {
+    console.log('SMALL IMGv2 DONE');
+
+
+  });
+
+  backdropLargePromise.done(function() {
+    console.log('LARGE IMGv2 DONE');
+
+
+  });
+
+  /*
   $.when(displayShowInfoPromise, backdropLoaderPromise).done(function() {
     console.log('BOTH DONE');
 
@@ -255,6 +271,102 @@ function gotoShow(show) {
     $('.bg_container:not(.previous) .bg_small').fadeOut(300);
     $('.bg_container.previous').remove();
   });
+  */
+
+  // Show info and small backdrop finish loading -> Animate and show
+  $.when(displayShowInfoPromise, backdropSmallPromise).done(function() {
+    // Display show info
+    $('.show_info.previous').remove();
+    $('.show_info').show();
+
+    // Display backdrop(s)
+    if ($('.bg_container')[0]) { // Background already exists
+      $('.bg_container').addClass('previous');
+    }
+    $('#content').before('<div class="bg_container"></div>');
+
+    // Display small backdrop image
+    $('.bg_container:not(.previous)').append('<div class="bg_small"></div>');
+    $('.bg_container:not(.previous) .bg_small').css({
+      'background-image' : 'url(' + backdropSmall + ')'
+    });
+
+    // Remove previous backdrop
+    $('.bg_container.previous').fadeOut(300, function() {
+      $(this).remove();
+    });
+
+    // Large backdrop finish loading
+    $.when(backdropLargePromise).done(function() {
+      // Display large backdrop image
+      $('<div class="bg_large"></div>').appendTo('.bg_container:not(.previous)');
+      $('.bg_container:not(.previous) .bg_large').css({
+        'background-image' : 'url(' + backdropLarge + ')'
+      });
+
+      // Hide small backdrop
+      $('.bg_container:not(.previous) .bg_small').fadeOut(300);
+
+      // Animate blur
+      var setBlur = function(element, amount) {
+        $(element).css({
+          '-webkit-filter' : 'blur(' + amount + 'px)',
+          'filter' : 'blur(' + amount + 'px)'
+        });
+      },
+
+      tweenBlur = function(element, startAmount, endAmount) {
+        $({blurAmount: startAmount}).animate({blurAmount: endAmount}, {
+          duration: 300,
+          easing: 'swing',
+          step: function() {
+            setBlur(element, this.blurAmount);
+          },
+          callback: function() {
+            setBlur(element, endAmount);
+          }
+        });
+      };
+
+      // Animate scale
+      var setScale = function(element, amount) {
+        $(element).css({
+          'transform' : 'scale(' + amount + ')'
+        });
+      },
+
+      tweenScale = function(element, startAmount, endAmount) {
+        $({scaleAmount: startAmount}).animate({scaleAmount: endAmount}, {
+          duration: 600,
+          easing: 'swing',
+          step: function() {
+            setScale(element, this.scaleAmount);
+          },
+          callback: function() {
+            setScale(element, endAmount);
+          }
+        });
+      };
+
+      tweenBlur('.bg_container:not(.previous) .bg_large', 8, 0);
+      tweenScale('.bg_container:not(.previous) .bg_large', 1.02, 1);
+    });
+
+  });
+}
+
+// Image/backdrop loader (hide image until finished loading)
+function imgLoader(urlSrc) {
+  var imgDeferred = $.Deferred();
+  var img = new Image();
+
+  img.onload = function() {
+    imgDeferred.resolve();
+  }
+
+  img.src = urlSrc;
+
+  return imgDeferred.promise();
 }
 
 // Load small/large backdrop and display it

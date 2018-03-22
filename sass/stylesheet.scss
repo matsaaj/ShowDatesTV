@@ -261,12 +261,16 @@ nav {
   }
 
   .bg_small {
+    -webkit-filter: blur(8px);
     filter: blur(8px);
     transform: scale(1.02);
     z-index: 1;
   }
 
   .bg_large {
+    -webkit-filter: blur(8px);
+    filter: blur(8px);
+    transform: scale(1.02);
     z-index: 0;
   }
 
