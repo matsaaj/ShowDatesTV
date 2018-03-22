@@ -270,11 +270,15 @@ nav {
     z-index: 0;
   }
 
+  &.previous {
+    z-index: 1;
+  }
 }
 
 // SHOW INFO //
 .show_info {
   padding: 1.5rem;
+  z-index: 2;
 }
 
 

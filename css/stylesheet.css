@@ -188,9 +188,12 @@ nav {
     z-index: 1; }
   .bg_container .bg_large {
     z-index: 0; }
+  .bg_container.previous {
+    z-index: 1; }
 
 .show_info {
-  padding: 1.5rem; }
+  padding: 1.5rem;
+  z-index: 2; }
 
 footer {
   position: relative;
