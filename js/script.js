@@ -194,20 +194,24 @@ function displayShowInfo(show) {
     // console.log('Season: ' + seasonNumber + ' Episode: ' + nextEpisode);
     // console.log('Release date: ' + nextReleaseDate);
 
-    $('.show_info').remove();
-    $('#content').append('<div class="show_info"></div>');
-    $('.show_info').append('<h1 class="show_title">' + showTitle + '</h1>');
+    if ($('.show_info')[0]) { // Show info already exists
+      $('.show_info').addClass('previous');
+    }
+
+    // $('<div class="show_info"></div>').hide().appendTo('#content');
+    $('<div class="show_info"></div>').hide().appendTo('#content');
+    $('.show_info:not(.previous)').append('<h1 class="show_title">' + showTitle + '</h1>');
 
     if (nextReleaseDate) { // Release date is known for season or season+episode
       if (!nextEpisode) { // Season premiere
-        $('.show_info').append('<h2 class="episode_number">Season ' + seasonNumber + ' Premiere</h2>');
+        $('.show_info:not(.previous)').append('<h2 class="episode_number">Season ' + seasonNumber + ' Premiere</h2>');
       } else { // Specific episode release
-        $('.show_info').append('<h2 class="episode_number">Season ' + seasonNumber + ' Episode ' + nextEpisode +'</h2>');
+        $('.show_info:not(.previous)').append('<h2 class="episode_number">Season ' + seasonNumber + ' Episode ' + nextEpisode +'</h2>');
       }
     } else if (cancelled) { // Show is cancelled
-      $('.show_info').append('<p class="release_details">The show got cancelled after ' + seasonNumber + ' season' + suffix + '.</p>');
+      $('.show_info:not(.previous)').append('<p class="release_details">The show got cancelled after ' + seasonNumber + ' season' + suffix + '.</p>');
     } else { // Show is not cancelled but release date for next season has not been announced
-      $('.show_info').append('<p class="release_details">The release date for season ' + seasonNumber + ' has not been announced yet.</p>');
+      $('.show_info:not(.previous)').append('<p class="release_details">The release date for season ' + seasonNumber + ' has not been announced yet.</p>');
     }
 
     deferred.resolve(showTitle);
@@ -238,60 +242,22 @@ function gotoShow(show) {
 
   document.title = showTitle + ' - Showdates.tv';
 
-  displayShowInfo(show).done(function(e) {
-    console.log(e + ' RESOLVED!');
+  var displayShowInfoPromise = displayShowInfo(show);
+  var backdropLoaderPromise = backdropLoader(backdropSmall, backdropLarge);
 
-    if (e != showTitle) {
-      alert('RESOLVE ERR');
-    }
-  });
-  backdropLoader(backdropSmall, backdropLarge).done(function(e) {
-    console.log(e + ' IMG!');
-  });
-  /*
-  if ($('.bg_container')[0]) {
-    $('.bg_container').addClass('previous');
-  }
-  $('#content').before('<div class="bg_container"></div>');
+  $.when(displayShowInfoPromise, backdropLoaderPromise).done(function() {
+    console.log('BOTH DONE');
 
-  imgLarge.onload = function(e) {
-    console.log('large img loaded');
-    imgLargeLoaded = true;
-    $('.bg_container:not(.previous)').append('<div class="bg_large"></div>');
-    $('.bg_container:not(.previous) .bg_large').css({
-      'background-image' : 'url(' + backdropLarge + ')'
-    });
+    $('.show_info.previous').remove();
+    $('.show_info').show();
 
-    console.log('showing large img');
-    // $('.bg_container:not(.previous) .bg_large').fadeIn(300);
+    $('.bg_container:not(.previous) .bg_large').show();
     $('.bg_container:not(.previous) .bg_small').fadeOut(300);
-
-
-    setTimeout(function() {
-      $('.bg_container.previous').remove();
-    }, 300);
-  }
-
-  imgSmall.onload = function() {
-    console.log('small img loaded');
-    setTimeout(function() {
-      if (!imgLargeLoaded) { // Large img not loaded 50ms after small img
-        console.log('showing small img');
-        $('.bg_container:not(.previous) .bg_small').show();
-      }
-    }, 50);
-    $('.bg_container:not(.previous)').append('<div class="bg_small"></div>');
-    $('.bg_container:not(.previous) .bg_small').hide().css({
-      'background-image' : 'url(' + backdropSmall + ')'
-    });
-
-    imgLarge.src = backdropLarge;
-  }
-
-  imgSmall.src = backdropSmall;
-  */
+    $('.bg_container.previous').remove();
+  });
 }
 
+// Load small/large backdrop and display it
 function backdropLoader(url1, url2) {
   var deferredImg = $.Deferred();
 
@@ -310,18 +276,14 @@ function backdropLoader(url1, url2) {
     imgLargeLoaded = true;
     deferredImg.resolve();
 
-    $('.bg_container:not(.previous)').append('<div class="bg_large"></div>');
+    $('<div class="bg_large"></div>').hide().appendTo('.bg_container:not(.previous)');
     $('.bg_container:not(.previous) .bg_large').css({
       'background-image' : 'url(' + url2 + ')'
     });
-
-    console.log('LARGE IMG SHOWING');
     // $('.bg_container:not(.previous) .bg_large').fadeIn(300);
-    $('.bg_container:not(.previous) .bg_small').fadeOut(300);
+    // $('.bg_container:not(.previous) .bg_small').fadeOut(300);
 
-    $('.bg_container.previous').fadeOut(300, function() {
-      // $(this).remove();
-    });
+
 
 
     setTimeout(function() {
