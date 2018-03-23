@@ -223,58 +223,23 @@ function displayShowInfo(show) {
 // Load show page and update url parameter
 function gotoShow(show) {
   // TEMP-HIDE console.log(show);
-
-  /*
-  var imgSmall = new Image();
-  imgSmall.src = '';
-  var imgLarge = new Image();
-  imgLarge.src = '';
-  var imgLargeLoaded = false;
-  var delayTimer = false;
-  */
-
-  searchbarToggle('hide');
+  // TODO: Add safety functions for shows without background
 
   var showTitle = show['name'];
   var backdrop = show['backdrop_path'];
   var backdropSmall = 'https://image.tmdb.org/t/p/w300' + backdrop;
   var backdropLarge = 'https://image.tmdb.org/t/p/original' + backdrop;
 
-  document.title = showTitle + ' - Showdates.tv';
-
   var displayShowInfoPromise = displayShowInfo(show);
-  // var backdropLoaderPromise = backdropLoader(backdropSmall, backdropLarge);
   var backdropSmallPromise = imgLoader(backdropSmall);
   var backdropLargePromise = imgLoader(backdropLarge);
 
-
-  backdropSmallPromise.done(function() {
-    console.log('SMALL IMGv2 DONE');
-
-
-  });
-
-  backdropLargePromise.done(function() {
-    console.log('LARGE IMGv2 DONE');
-
-
-  });
-
-  /*
-  $.when(displayShowInfoPromise, backdropLoaderPromise).done(function() {
-    console.log('BOTH DONE');
-
-    $('.show_info.previous').remove();
-    $('.show_info').show();
-
-    $('.bg_container:not(.previous) .bg_large').show();
-    $('.bg_container:not(.previous) .bg_small').fadeOut(300);
-    $('.bg_container.previous').remove();
-  });
-  */
-
   // Show info and small backdrop finish loading -> Animate and show
   $.when(displayShowInfoPromise, backdropSmallPromise).done(function() {
+    var largeImgQuickload = true;
+    searchbarToggle('hide'); // TODO: Maybe change before content load
+    document.title = showTitle + ' - Showdates.tv'; // TODO: Maybe change before content load
+
     // Display show info
     $('.show_info.previous').remove();
     $('.show_info').show();
@@ -284,40 +249,76 @@ function gotoShow(show) {
       $('.bg_container').addClass('previous');
     }
     $('#content').before('<div class="bg_container"></div>');
+    $('.bg_container:not(.previous)').append('<div class="bg_vignette"></div>');
 
-    // Display small backdrop image
+    // Append small backdrop image as hidden
     $('.bg_container:not(.previous)').append('<div class="bg_small"></div>');
+    $('.bg_container:not(.previous) .bg_small').hide();
     $('.bg_container:not(.previous) .bg_small').css({
-      'background-image' : 'url(' + backdropSmall + ')'
+      'background' :
+        'linear-gradient(to top, rgba(47,7,67,.25),' +
+        'rgba(65,41,90,.50)),' +
+        'url(' + backdropSmall + ')' +
+        '50% / cover no-repeat'
     });
 
     // Remove previous backdrop
-    $('.bg_container.previous').fadeOut(300, function() {
+    $('.bg_container.previous').fadeOut(150, function() {
       $(this).remove();
     });
+
+    // Show small backdrop if large image is not loaded instantly
+    if (backdropLargePromise.state() != 'resolved') {
+      largeImgQuickload = false;
+      $('.bg_container:not(.previous) .bg_small').show();
+    }
 
     // Large backdrop finish loading
     $.when(backdropLargePromise).done(function() {
       // Display large backdrop image
       $('<div class="bg_large"></div>').appendTo('.bg_container:not(.previous)');
+
+
+      var imgBlur = 0; // css blur(px) value
+      var imgScale = 1 // css scale value
+      if (!largeImgQuickload) { // Large image loaded after small image
+        imgBlur = 8;
+        imgScale = 1.02;
+      }
+
+      /* OLD
       $('.bg_container:not(.previous) .bg_large').css({
         'background-image' : 'url(' + backdropLarge + ')'
       });
+      */
+      $('.bg_container:not(.previous) .bg_large').css({
+        'background' :
+          'linear-gradient(to top, rgba(47,7,67,.25),' +
+          'rgba(65,41,90,.50)),' +
+          'url(' + backdropLarge + ')' +
+          '50% / cover no-repeat'
+      });
 
       // Hide small backdrop
-      $('.bg_container:not(.previous) .bg_small').fadeOut(300);
+      $('.bg_container:not(.previous) .bg_small').fadeOut(150);
 
       // Animate blur
       var setBlur = function(element, amount) {
         $(element).css({
+          '-webkit-filter' : 'blur(' + amount + 'px) grayscale(20%) brightness(110%) contrast(120%)',
+          'filter' : 'blur(' + amount + 'px) grayscale(20%) brightness(110%) contrast(120%)'
+        });
+        /* OLD
+        $(element).css({
           '-webkit-filter' : 'blur(' + amount + 'px)',
           'filter' : 'blur(' + amount + 'px)'
         });
+        */
       },
 
-      tweenBlur = function(element, startAmount, endAmount) {
+      tweenBlur = function(element, startAmount, endAmount, speed) {
         $({blurAmount: startAmount}).animate({blurAmount: endAmount}, {
-          duration: 300,
+          duration: speed,
           easing: 'swing',
           step: function() {
             setBlur(element, this.blurAmount);
@@ -335,9 +336,9 @@ function gotoShow(show) {
         });
       },
 
-      tweenScale = function(element, startAmount, endAmount) {
+      tweenScale = function(element, startAmount, endAmount, speed) {
         $({scaleAmount: startAmount}).animate({scaleAmount: endAmount}, {
-          duration: 600,
+          duration: speed,
           easing: 'swing',
           step: function() {
             setScale(element, this.scaleAmount);
@@ -348,8 +349,14 @@ function gotoShow(show) {
         });
       };
 
-      tweenBlur('.bg_container:not(.previous) .bg_large', 8, 0);
-      tweenScale('.bg_container:not(.previous) .bg_large', 1.02, 1);
+      if (!largeImgQuickload) { // Large image loaded after small image
+        tweenBlur('.bg_container:not(.previous) .bg_large', imgBlur, 0, 300);
+        tweenScale('.bg_container:not(.previous) .bg_large', 1.02, 1, 600);
+      } else { // Large image loaded same time as small image
+        tweenBlur('.bg_container:not(.previous) .bg_large', imgBlur, 0, 0);
+        tweenScale('.bg_container:not(.previous) .bg_large', 1.02, 1, 300);
+      }
+
     });
 
   });
@@ -368,64 +375,6 @@ function imgLoader(urlSrc) {
 
   return imgDeferred.promise();
 }
-
-// Load small/large backdrop and display it
-function backdropLoader(url1, url2) {
-  var deferredImg = $.Deferred();
-
-  var imgSmall = new Image();
-  var imgLarge = new Image();
-  var imgLargeLoaded = false;
-
-  if ($('.bg_container')[0]) { // Background already exists
-    $('.bg_container').addClass('previous');
-  }
-  $('#content').before('<div class="bg_container"></div>');
-
-  imgLarge.onload = function() {
-    console.log('LARGE IMG LOADED');
-
-    imgLargeLoaded = true;
-    deferredImg.resolve();
-
-    $('<div class="bg_large"></div>').hide().appendTo('.bg_container:not(.previous)');
-    $('.bg_container:not(.previous) .bg_large').css({
-      'background-image' : 'url(' + url2 + ')'
-    });
-    // $('.bg_container:not(.previous) .bg_large').fadeIn(300);
-    // $('.bg_container:not(.previous) .bg_small').fadeOut(300);
-
-
-
-
-    setTimeout(function() {
-      // $('.bg_container.previous').remove();
-    }, 300);
-  }
-
-  imgSmall.onload = function() {
-    console.log('SMALL IMG LOADED');
-
-    setTimeout(function() {
-      if (!imgLargeLoaded) { // Large img not loaded 50ms after small img
-        console.log('SMALL IMG SHOWING');
-        $('.bg_container:not(.previous) .bg_small').show();
-      }
-    }, 0); // 50
-    $('.bg_container:not(.previous)').append('<div class="bg_small"></div>');
-    $('.bg_container:not(.previous) .bg_small').hide().css({
-      'background-image' : 'url(' + url1 + ')'
-    });
-
-    imgLarge.src = '';
-    imgLarge.src = url2;
-  }
-  imgSmall.src = '';
-  imgSmall.src = url1;
-
-  return deferredImg.promise();
-}
-
 
 // Disable input cursor movement on up/down arrow
 $('.searchbar_input').keydown(function(e) {
@@ -462,6 +411,8 @@ function changeHighlightItem(direction) {
 
 // Go to show page from autocomplete selection
 function selectSearchSuggestion(tmdbId, showTitle) {
+  $('.searchbar_input').val(showTitle);
+
   if (getUrlParams() != tmdbId) { // Selection is not the page you are currently on
     var url = '?id=' + tmdbId;
     window.history.pushState(tmdbId, showTitle, url);
@@ -505,6 +456,7 @@ $('.searchbar_input').keyup(function(e) {
 
 // Show/hide searchbar function
 function searchbarToggle(e) {
+  var searchDeferred = $.Deferred();
   $('#search_toggle').dequeue().finish();
   $('#search').dequeue().finish();
 
@@ -519,6 +471,8 @@ function searchbarToggle(e) {
       $('.highlight_card img').remove();
       $('.autocomplete_suggestions ul li').remove();
       $('.searchbar_input').val('');
+
+      searchDeferred.resolve();
     });
 
     $('#brand').css({
@@ -527,7 +481,14 @@ function searchbarToggle(e) {
 
     // REMOVE?
       // $('nav').css('background-color', 'rgba(37,34,34,0)');
+      $('nav').css('background-color', 'rgba(232,83,84,0)');
       $('.dark_overlay').fadeOut(200);
+      /*
+      $('.bg_small').fadeOut(200);
+      $('.show_info, footer').css({
+        'filter' : 'blur(0px)'
+      });
+      */
     //
 
     // $('.autocomplete_suggestions').slideUp(200, 'easeInOutQuad');
@@ -542,6 +503,8 @@ function searchbarToggle(e) {
       'opacity': 1
     }, 200, function() {
       $('.searchbar_input').focus();
+
+      searchDeferred.resolve();
     });
 
 
@@ -551,7 +514,14 @@ function searchbarToggle(e) {
 
     // REMOVE?
       // $('nav').css('background-color', 'rgba(37,34,34,0.9)');
+      $('nav').css('background-color', 'rgba(232,83,84,.8)');
       $('.dark_overlay').fadeIn(200);
+      /*
+      $('.bg_small').fadeIn(200);
+      $('.show_info, footer').css({
+        'filter' : 'blur(1px)'
+      });
+      */
     //
 
     $('.autocomplete_suggestions').css('display', 'flex').hide();
@@ -565,6 +535,7 @@ function searchbarToggle(e) {
     easing: 'easeInOutQuint',
     duration: 300
   });
+  return searchDeferred.promise();
 }
 
 // Toggle searchbar on click

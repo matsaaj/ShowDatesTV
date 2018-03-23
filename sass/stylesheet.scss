@@ -149,7 +149,7 @@ nav {
   height: 100%;
   color: $white;
   // background-color: rgba(37,34,34,0.9);
-  z-index: 2;
+  z-index: 3; // Was 2
   overflow-y: auto;
 
   ul, li {
@@ -219,7 +219,7 @@ nav {
   height: 100%;
   width: 100%;
   background-color: rgba(37,34,34,0.9);
-  z-index: 1;
+  z-index: 3;
 }
 
 .content_container {
@@ -250,7 +250,7 @@ nav {
   z-index: 0;
   overflow: hidden;
 
-  .bg_small, .bg_large {
+  .bg_small, .bg_large, .bg_vignette {
     position: absolute;
     top: 0;
     height: 100%;
@@ -261,28 +261,44 @@ nav {
   }
 
   .bg_small {
-    -webkit-filter: blur(8px);
-    filter: blur(8px);
+    -webkit-filter: blur(8px) grayscale(20%) brightness(110%) contrast(120%); // Change blur to 15? If so change script functions to match
+    filter: blur(8px) grayscale(20%) brightness(110%) contrast(120%);
+    // blur(0px) grayscale(20%) brightness(110%) contrast(120%)
     transform: scale(1.02);
     z-index: 1;
   }
 
   .bg_large {
-    -webkit-filter: blur(8px);
-    filter: blur(8px);
-    transform: scale(1.02);
+    // -webkit-filter: blur(8px);
+    // filter: blur(8px);
+    // transform: scale(1.02);
     z-index: 0;
+  }
+
+  .bg_vignette {
+    // background-color: rgba(0,0,0,.2);
+    opacity: .8;
+    background: -moz-radial-gradient(bottom center, ellipse cover, rgba(0,0,0,0.6) 0%, rgba(0,0,0,.95) 100%);
+    background: -webkit-radial-gradient(bottom center, ellipse cover, rgba(0,0,0,0.6) 0%,rgba(0,0,0,.95) 100%);
+    background: radial-gradient(ellipse at bottom center, rgba(0,0,0,0.6) 0%,rgba(0,0,0,.95) 100%);
+    z-index: 2;
   }
 
   &.previous {
     z-index: 1;
   }
+
+  /*
+  &:not(.previous) .bg_vignette {
+    background-color: rgba(0,0,0,.5);
+    z-index: 2;
+  }
+  */
 }
 
 // SHOW INFO //
 .show_info {
   padding: 1.5rem;
-  z-index: 2;
 }
 
 
@@ -294,7 +310,7 @@ footer {
   display: block;
   width: calc(100%-3rem);
   margin: 0 1.5rem 1.5rem;
-  z-index: 3;
+  z-index: 2;
 
   .container {
     position: relative;
