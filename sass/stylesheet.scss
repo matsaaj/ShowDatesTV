@@ -298,13 +298,90 @@ nav {
 
 // SHOW INFO //
 .show_info {
+  width: 100%;
+  max-width: 940px;
+  margin: 0 auto;
   padding: 1.5rem;
+
+  h1.show_title {
+    position: relative;
+    font-size: 3em;
+    font-weight: 600;
+    padding: .5rem 0;
+    border-bottom: 1px solid $gray;
+
+    &::after {
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      content: '';
+      width: 40%;
+      height: 4px;
+      background-color: $red;
+    }
+  }
+
+  h2.episode_details {
+    font-size: 1.125em; // 1.3125em
+    font-weight: 400;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+
+  p.release_date {
+    font-size: 4em;
+    font-weight: 600; // 300 ?
+    margin: 0;
+  }
+
+  p.release_nodate {
+    font-size: 1.3125em; // 1.125em
+    font-weight: 400;
+    margin: 0;
+  }
+
+  .emailreminder_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 2rem 0;
+    color: $darkgray;
+    border-radius: 2px;
+    background-color: $red;
+
+    .submit_container {
+      padding: 1rem;
+      margin: 0;
+      background-color: $red;
+    }
+
+    h2 {
+      color: #fff;
+      padding: 1rem;
+      margin: 0;
+      font-size: 1.125em;
+      font-weight: 400;
+    }
+
+    input {
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 1.125rem;
+      border: 0;
+      outline: 0;
+      padding: .5rem;
+      border-radius: 2px;
+    }
+
+    input[type='email'] {
+      // border-bottom: 1px solid $darkgray;
+    }
+  }
 }
 
 
 
 // FOOTER //
-
 footer {
   position: relative;
   display: block;

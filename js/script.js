@@ -202,16 +202,24 @@ function displayShowInfo(show) {
     $('<div class="show_info"></div>').hide().appendTo('#content');
     $('.show_info:not(.previous)').append('<h1 class="show_title">' + showTitle + '</h1>');
 
+    var emailreminder_div = '<div class="emailreminder_container"><h2>Get notified when it\'s out</h2><div class="submit_container"><input type="email" placeholder="you@email.com"><input type="button" value="submit"></div></div>';
+
     if (nextReleaseDate) { // Release date is known for season or season+episode
+      nextReleaseDate = nextReleaseDate.toString('MMMM dS, yyyy');
       if (!nextEpisode) { // Season premiere
-        $('.show_info:not(.previous)').append('<h2 class="episode_number">Season ' + seasonNumber + ' Premiere</h2>');
+        $('.show_info:not(.previous)').append('<h2 class="episode_details">Season ' + seasonNumber + ' Premiere</h2>');
+        $('.show_info:not(.previous)').append('<p class="release_date">' + nextReleaseDate + '</p>');
+        $('.show_info:not(.previous)').append(emailreminder_div);
       } else { // Specific episode release
-        $('.show_info:not(.previous)').append('<h2 class="episode_number">Season ' + seasonNumber + ' Episode ' + nextEpisode +'</h2>');
+        $('.show_info:not(.previous)').append('<h2 class="episode_details">Season ' + seasonNumber + ' Episode ' + nextEpisode +'</h2>');
+        $('.show_info:not(.previous)').append('<p class="release_date">' + nextReleaseDate + '</p>');
+        $('.show_info:not(.previous)').append(emailreminder_div);
       }
     } else if (cancelled) { // Show is cancelled
-      $('.show_info:not(.previous)').append('<p class="release_details">The show got cancelled after ' + seasonNumber + ' season' + suffix + '.</p>');
+      $('.show_info:not(.previous)').append('<p class="release_nodate">The show got cancelled after ' + seasonNumber + ' season' + suffix + '.</p>');
     } else { // Show is not cancelled but release date for next season has not been announced
-      $('.show_info:not(.previous)').append('<p class="release_details">The release date for season ' + seasonNumber + ' has not been announced yet.</p>');
+      $('.show_info:not(.previous)').append('<p class="release_nodate">The release date for season ' + seasonNumber + ' has not been announced yet.</p>');
+      $('.show_info:not(.previous)').append(emailreminder_div);
     }
 
     deferred.resolve(showTitle);

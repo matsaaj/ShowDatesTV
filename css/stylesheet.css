@@ -205,7 +205,63 @@ nav {
     z-index: 1; }
 
 .show_info {
+  width: 100%;
+  max-width: 940px;
+  margin: 0 auto;
   padding: 1.5rem; }
+  .show_info h1.show_title {
+    position: relative;
+    font-size: 3em;
+    font-weight: 600;
+    padding: .5rem 0;
+    border-bottom: 1px solid #595656; }
+    .show_info h1.show_title::after {
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      content: '';
+      width: 40%;
+      height: 4px;
+      background-color: #e85354; }
+  .show_info h2.episode_details {
+    font-size: 1.125em;
+    font-weight: 400;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: .5px; }
+  .show_info p.release_date {
+    font-size: 4em;
+    font-weight: 600;
+    margin: 0; }
+  .show_info p.release_nodate {
+    font-size: 1.3125em;
+    font-weight: 400;
+    margin: 0; }
+  .show_info .emailreminder_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 2rem 0;
+    color: #252222;
+    border-radius: 2px;
+    background-color: #e85354; }
+    .show_info .emailreminder_container .submit_container {
+      padding: 1rem;
+      margin: 0;
+      background-color: #e85354; }
+    .show_info .emailreminder_container h2 {
+      color: #fff;
+      padding: 1rem;
+      margin: 0;
+      font-size: 1.125em;
+      font-weight: 400; }
+    .show_info .emailreminder_container input {
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 1.125rem;
+      border: 0;
+      outline: 0;
+      padding: .5rem;
+      border-radius: 2px; }
 
 footer {
   position: relative;
