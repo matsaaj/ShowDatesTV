@@ -49,16 +49,139 @@ function getShowData(id) {
   });
 }
 
+// Get show data from tmdb id (TODO: REMOVE?)
+function returnShowData(id) {
+  return $.ajax({
+    async: true,
+    crossDomain: true,
+    url: 'https://api.themoviedb.org/3/tv/' + id + '?&api_key=' + api_key,
+    dataType: 'jsonp',
+    method: 'GET'
+  });
+}
+
 // Get show data for a specific season from tmdb id and season number
 function getSeasonData(id, seasonNumber) {
   return $.ajax({
     async: true,
     crossDomain: true,
-    url: 'https://api.themoviedb.org/3/tv/' + id + '/season/' + seasonNumber + '?&api_key=' + api_key,
+    url: 'https://api.themoviedb.org/3/tv/' + id + '/season/' + seasonNumber + '?api_key=' + api_key + '&page=2',
     dataType: 'jsonp',
     method: 'GET'
   });
 }
+
+// Get shows with upcoming episode releases (TODO: REMOVE?)
+function upcomingReleases() {
+  $.ajax({
+    async: true,
+    crossDomain: true,
+    url: 'https://api.themoviedb.org/3/tv/airing_today' + '?&api_key=' + api_key,
+    dataType: 'jsonp',
+    method: 'GET',
+    success: function(data) {
+      // console.log(data['results'].length);
+      for (i = 0; i < data['results'].length; i++) {
+        console.log(data['results'][i]);
+      }
+    },
+    error: function(data) {
+      console.log(data);
+    }
+  });
+}
+
+// Get shows with upcoming episode releases v2 (TODO: REMOVE?)
+function upcomingReleases2() {
+  $.ajax({
+    async: true,
+    crossDomain: true,
+    url: 'https://api.themoviedb.org/3/tv/on_the_air' + '?&api_key=' + api_key,
+    dataType: 'jsonp',
+    method: 'GET',
+    success: function(data) {
+      console.log(data);
+      var resultsLength = data['results'].length;
+      if (resultsLength > 15) {
+        resultsLength = 15;
+      }
+      var showsObj = {};
+
+      for (i = 0; i < resultsLength; i++) {
+        // console.log(data['results'][i]);
+        var tempId = data['results'][i]['id'];
+        var title = data['results'][i]['name'];
+        console.log(tempId + ' ' + title);
+        showsObj[tempId] = {name: '', seasonNumber: '', seasonId: '', episode: '', release: ''};
+        showsObj[tempId]['name'] = title;
+
+        var showDetails = returnShowData(tempId);
+        showDetails.done(function(showDetails) {
+          // console.log(showDetails);
+          var seasonNumber = showDetails['seasons'].length - 1;
+          var seasonId = showDetails['seasons'][seasonNumber]['id'];
+          var showId = showDetails['id'];
+          showsObj[showId]['seasonNumber'] = seasonNumber;
+          showsObj[showId]['seasonId'] = seasonId;
+
+          var seasonData = getSeasonData(showId, seasonNumber);
+          seasonData.then(function(seasonData) { // done instead of then?
+            console.log(seasonData);
+            var nextReleaseDate = false;
+            var nextEpisode = false;
+            var seasonDataId = seasonData['id'];
+            var dateToday = Date.today().clearTime();
+            var episodeCnt = seasonData['episodes'].length;
+            for (cnt = episodeCnt - 1; cnt + 1 > 0; cnt--) { // Loop through each episode in season from last to first
+              var episodeRelease = Date.parseExact(seasonData['episodes'][cnt]['air_date'], 'yyyy-MM-dd');
+
+              if (Date.compare(episodeRelease, dateToday) < 0) { // Break loop if episode has been released (including episode releasing today)
+                break;
+              }
+
+              nextEpisode = seasonData['episodes'][cnt]['episode_number'];
+              nextReleaseDate = episodeRelease;
+            }
+            for ([key, value] of Object.entries(showsObj)) {
+              if (seasonDataId == value['seasonId']) {
+                console.log(seasonDataId + ' == ' + value['seasonId']);
+                showsObj[key]['episode'] = nextEpisode;
+                showsObj[key]['release'] = nextReleaseDate;
+                break;
+              } else {
+                console.log(seasonDataId + ' != ' + value['seasonId']);
+              }
+            }
+          });
+        });
+      }
+      console.log(showsObj);
+    },
+    error: function(data) {
+      console.log(data);
+    }
+  });
+}
+
+// Get specific episode data (TODO: REMOVE?)
+function getEpisodeData(id, seasonNumber, episodeNumber) {
+  $.ajax({
+    async: true,
+    crossDomain: true,
+    url: 'https://api.themoviedb.org/3/tv/' + id + '/season/' + seasonNumber + '/episode/' + episodeNumber + '?&api_key=' + api_key,
+    dataType: 'jsonp',
+    method: 'GET',
+    success: function(data) {
+      console.log(data);
+    },
+    error: function(data) {
+      console.log(data);
+    }
+  });
+}
+
+// upcomingReleases2();
+
 
 // Populate search autocomplete
 function autocompleteSearch(searchQuery) {
@@ -161,7 +284,8 @@ function displayShowInfo(show) {
 
   var seasonData = getSeasonData(showId, seasonNumber);
   seasonData.then(function(seasonData) {
-    // TEMP-HIDE console.log(seasonData);
+    // TEMP-HIDE
+    console.log(seasonData);
 
     releaseDate = Date.parseExact(releaseDate, 'yyyy-MM-dd');
     var dateToday = Date.today().clearTime();
@@ -464,7 +588,7 @@ $('.searchbar_input').keyup(function(e) {
 
 // Show/hide searchbar function
 function searchbarToggle(e) {
-  var searchDeferred = $.Deferred();
+  // var searchDeferred = $.Deferred();
   $('#search_toggle').dequeue().finish();
   $('#search').dequeue().finish();
 
@@ -480,7 +604,7 @@ function searchbarToggle(e) {
       $('.autocomplete_suggestions ul li').remove();
       $('.searchbar_input').val('');
 
-      searchDeferred.resolve();
+      // searchDeferred.resolve();
     });
 
     $('#brand').css({
@@ -512,7 +636,7 @@ function searchbarToggle(e) {
     }, 200, function() {
       $('.searchbar_input').focus();
 
-      searchDeferred.resolve();
+      // searchDeferred.resolve();
     });
 
 
@@ -543,7 +667,7 @@ function searchbarToggle(e) {
     easing: 'easeInOutQuint',
     duration: 300
   });
-  return searchDeferred.promise();
+  // return searchDeferred.promise();
 }
 
 // Toggle searchbar on click

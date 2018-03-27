@@ -196,7 +196,7 @@ nav {
   .bg_container .bg_large {
     z-index: 0; }
   .bg_container .bg_vignette {
-    opacity: .8;
+    opacity: .7;
     background: -moz-radial-gradient(bottom center, ellipse cover, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.95) 100%);
     background: -webkit-radial-gradient(bottom center, ellipse cover, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.95) 100%);
     background: radial-gradient(ellipse at bottom center, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.95) 100%);
@@ -238,7 +238,7 @@ nav {
     font-weight: 400;
     margin: 0; }
   .show_info .emailreminder_container {
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     margin: 2rem 0;
