@@ -326,7 +326,7 @@ function displayShowInfo(show) {
     $('<div class="show_info"></div>').hide().appendTo('#content');
     $('.show_info:not(.previous)').append('<h1 class="show_title">' + showTitle + '</h1>');
 
-    var emailreminder_div = '<div class="emailreminder_container"><img src="./img/notify_date_icon.svg"><h2>Get notified when it\'s out</h2><div class="submit_container"><input type="email" placeholder="you@email.com"><input type="button" value="submit"></div></div>';
+    var emailreminder_div = '<div class="emailreminder_container"><img src="./img/notify_date_icon.svg"><h2>Get notified when it\'s out</h2><div class="submit_container"><input type="email" placeholder="you@email.com"><input type="button" value="Submit"></div></div>';
 
     if (nextReleaseDate) { // Release date is known for season or season+episode
       nextReleaseDate = nextReleaseDate.toString('MMMM dS, yyyy');
@@ -558,7 +558,20 @@ function selectSearchSuggestion(tmdbId, showTitle) {
 // Go to show page on autocomplete item click
 $('.autocomplete_suggestions ul').on('click', 'li', function() {
   var tmdbId = $(this).data('id');
-  var showTitle = $(this).text();
+  var showTitle = $(this).contents().filter(function() {
+    return this.nodeType == 3;
+  }).text();
+
+  selectSearchSuggestion(tmdbId, showTitle);
+});
+
+// Go to show page on autocomplete poster click
+$('.highlight_card').on('click', 'img', function() {
+  var cardIndex = $(this).data('index');
+  var tmdbId = $('.autocomplete_suggestions li').eq(cardIndex).data('id');
+  var showTitle = $('.autocomplete_suggestions li').eq(cardIndex).contents().filter(function() {
+    return this.nodeType == 3;
+  }).text();
 
   selectSearchSuggestion(tmdbId, showTitle);
 });
