@@ -326,7 +326,8 @@ function displayShowInfo(show) {
     $('<div class="show_info"></div>').hide().appendTo('#content');
     $('.show_info:not(.previous)').append('<h1 class="show_title">' + showTitle + '</h1>');
 
-    var emailreminder_div = '<div class="emailreminder_container"><img src="./img/notify_date_icon.svg"><h2>Get notified when it\'s out</h2><div class="submit_container"><input type="email" placeholder="you@email.com"><input type="button" value="Submit"></div></div>';
+    // var emailreminder_div = '<div class="emailreminder_container"><img src="./img/notify_date_icon.svg"><h2>Get notified when it\'s out</h2><div class="submit_container"><input type="email" placeholder="you@email.com"><input type="button" value="Submit"></div></div>';
+    var emailreminder_div = '<div class="emailreminder_container"><h2>Get notified when it\'s out</h2><div class="submit_container"><input type="email" placeholder="you@email.com"><input type="button" value="Submit"></div></div>';
 
     if (nextReleaseDate) { // Release date is known for season or season+episode
       nextReleaseDate = nextReleaseDate.toString('MMMM dS, yyyy');
